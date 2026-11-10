@@ -51,7 +51,7 @@ const SH = { OFF: 'Offices', USERS: 'Users', REC: 'Records', MOV: 'Movements', L
 const COLS = {
   Offices:   ['Code', 'Office Name', 'Level', 'Parent', 'Head', 'Order', 'Active'],
   Users:     ['Username', 'Password', 'Full Name', 'Designation', 'Office', 'Role', 'Active', 'Session Token', 'Last Login'],
-  Records:   ['TrackNo', 'Category', 'DocType', 'Subject', 'FromParty', 'ToParty', 'RefNo', 'DocDate', 'Priority',
+  Records:   ['TrackNo', 'Category', 'DocType', 'Subject', 'FromOffice', 'FromPerson', 'ToParty', 'RefNo', 'DocDate', 'Priority',
               'ActionRequired', 'DueDate', 'Pages', 'Remarks', 'FileId', 'FileName', 'FileMime', 'OriginOffice',
               'CreatedAt', 'CreatedBy', 'CreatedByName', 'UpdatedAt', 'OpId'],
   Movements: ['Id', 'TrackNo', 'ParentId', 'FromOffice', 'ToOffice', 'Purpose', 'Note', 'SentAt', 'SentBy', 'SentByName',
@@ -64,7 +64,7 @@ const COLS = {
 const TEXT_COLS = {
   Offices: ['Code', 'Parent'],
   Users: ['Username', 'Password', 'Office'],
-  Records: ['DocType', 'Subject', 'FromParty', 'ToParty', 'RefNo', 'DocDate', 'DueDate', 'Remarks', 'OriginOffice'],
+  Records: ['DocType', 'Subject', 'FromOffice', 'FromPerson', 'FromParty', 'ToParty', 'RefNo', 'DocDate', 'DueDate', 'ActionRequired', 'Remarks', 'OriginOffice'],
   Movements: ['Id', 'ParentId', 'Purpose', 'Note', 'ResponseNote', 'HoldNote'],
   Settings: ['Value']
 };
@@ -114,8 +114,11 @@ const DEFAULT_SETTINGS = [
   ['POLL_SECONDS', '10', 'How often each screen checks for new documents.']
 ];
 
+// Bump this when COLS changes: the server then adds the new columns to the sheets by itself.
+const SCHEMA = '2026-11-09b';
+
 const FIELD_LABELS = {
-  Category: 'Category', DocType: 'Type', Subject: 'Subject', FromParty: 'From', ToParty: 'To', RefNo: 'Ref. no.',
+  Category: 'Category', DocType: 'Type', Subject: 'Subject', FromOffice: 'From (office)', FromPerson: 'From (person)', ToParty: 'To', RefNo: 'Ref. no.',
   DocDate: 'Document date', Priority: 'Priority', ActionRequired: 'Action required', DueDate: 'Due date',
   Pages: 'Pages', Remarks: 'Remarks'
 };
@@ -128,13 +131,14 @@ function apiList_() {
   return {
     apiBoot: apiBoot, apiLogin: apiLogin, apiLogout: apiLogout, apiChangePassword: apiChangePassword,
     apiRev: apiRev, apiBoard: apiBoard, apiRecord: apiRecord, apiSearch: apiSearch, apiFindScans: apiFindScans,
-    apiUpload: apiUpload, apiPdf: apiPdf, apiAct: apiAct, apiAdmin: apiAdmin, apiAdminSave: apiAdminSave
+    apiUpload: apiUpload, apiPdf: apiPdf, apiAct: apiAct, apiAdmin: apiAdmin, apiAdminSave: apiAdminSave,
+    apiSuggest: apiSuggest, apiCheckNo: apiCheckNo
   };
 }
 function callApi_(fn, args) {
   const f = apiList_()[s_(fn)];
   if (!f) return { ok: false, error: 'Unknown request "' + s_(fn) + '".' };
-  try { return { ok: true, result: f.apply(null, Array.isArray(args) ? args : []) }; }
+  try { upgrade_(); return { ok: true, result: f.apply(null, Array.isArray(args) ? args : []) }; }
   catch (err) { return { ok: false, error: String((err && err.message) || err) }; }
 }
 function json_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
@@ -238,6 +242,34 @@ function add_(t, list) {
   const start = Math.max(t.sh.getLastRow(), 1) + 1;
   t.sh.getRange(start, 1, list.length, t.head.length).setValues(list.map(o => rowVals_(t, o)));
   list.forEach((o, i) => { o._r = start + i; t.rows.push(o); });
+}
+
+/** After a new Code.gs adds columns, the first request adds them to the existing sheets (no need to run setupSystem again). */
+function upgrade_() {
+  const props = PropertiesService.getScriptProperties();
+  if (props.getProperty('SCHEMA') === SCHEMA) return;
+  const ss = ss_();
+  if (!ss.getSheetByName(SH.OFF)) return;                 // not set up yet: setupSystem() makes everything
+  const lock = LockService.getScriptLock();
+  if (!lock.tryLock(CFG.LOCK_WAIT_MS)) fail_('BUSY: The system is updating its sheets. Retrying…');
+  try {
+    if (props.getProperty('SCHEMA') === SCHEMA) return;
+    migrateFrom_(ss);
+    Object.keys(COLS).forEach(name => { if (ss.getSheetByName(name)) ensureSheet_(ss, name, COLS[name]); });
+    SpreadsheetApp.flush();
+    props.setProperty('SCHEMA', SCHEMA);
+  } finally { lock.releaseLock(); }
+}
+
+/** The old single "FromParty" column becomes "FromOffice", with a new "FromPerson" column right after it. */
+function migrateFrom_(ss) {
+  const sh = ss.getSheetByName(SH.REC);
+  if (!sh || !sh.getLastColumn()) return;
+  const head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].map(s_);
+  const i = head.indexOf('FromParty');
+  if (i < 0 || head.indexOf('FromOffice') >= 0) return;
+  sh.getRange(1, i + 1).setValue('FromOffice');
+  if (head.indexOf('FromPerson') < 0) { sh.insertColumnAfter(i + 1); sh.getRange(1, i + 2).setValue('FromPerson'); }
 }
 
 function settings_() {
@@ -443,13 +475,16 @@ function apiBoot() {
 
 function recOut_(r) {
   return {
-    no: n_(r.TrackNo), cat: s_(r.Category), type: s_(r.DocType), subject: s_(r.Subject), fromP: s_(r.FromParty),
+    no: n_(r.TrackNo), cat: s_(r.Category), type: s_(r.DocType), subject: s_(r.Subject),
+    fromO: s_(r.FromOffice) || s_(r.FromParty), fromN: s_(r.FromPerson), fromP: fromText_(r),
     toP: s_(r.ToParty), ref: s_(r.RefNo), docDate: dateOut_(r.DocDate), prio: s_(r.Priority) || 'Normal',
     action: s_(r.ActionRequired), due: dateOut_(r.DueDate), pages: s_(r.Pages), remarks: s_(r.Remarks),
     fileId: s_(r.FileId), fileName: s_(r.FileName), fileMime: s_(r.FileMime), origin: s_(r.OriginOffice),
     createdAt: ms_(r.CreatedAt), createdBy: s_(r.CreatedByName) || s_(r.CreatedBy), updatedAt: ms_(r.UpdatedAt)
   };
 }
+/** "Office · Person" for lists, search and the routing slip. */
+function fromText_(r) { return [s_(r.FromOffice) || s_(r.FromParty), s_(r.FromPerson)].filter(Boolean).join(' · '); }
 function mvOut_(m) {
   return {
     id: s_(m.Id), no: n_(m.TrackNo), parent: s_(m.ParentId), from: s_(m.FromOffice), to: s_(m.ToOffice),
@@ -511,11 +546,7 @@ function apiBoard(token) {
   const records = {};
   Object.keys(used).forEach(no => { if (recMap[no]) records[no] = recOut_(recMap[no]); });
 
-  let next = '';
-  if (canLog_(user, set)) {
-    const max = recs.reduce((x, r) => Math.max(x, n_(r.TrackNo)), 0);
-    next = Math.max(max + 1, Math.floor(n_(set.START_NUMBER)) || 1);
-  }
+  const next = canLog_(user, set) ? nextNo_(recs, set) : '';
   return {
     rev: rev_(), now: Date.now(), today: today, me: user, seeAll: all, canLog: canLog_(user, set), next: next,
     set: publicSet_(set), org: orgOut_(org), lists: lists, records: records, counts: counts
@@ -615,7 +646,7 @@ function apiSearch(token, q, opt) {
     if (opt.state && opt.state !== state) continue;
     if (exact) { if (no !== Number(exact[1])) continue; }
     else if (words.length) {
-      const hay = [r.Subject, r.FromParty, r.ToParty, r.RefNo, r.DocType, r.Remarks, r.OriginOffice].map(s_).join(' ').toLowerCase();
+      const hay = [r.Subject, r.FromOffice, r.FromPerson, r.FromParty, r.ToParty, r.RefNo, r.DocType, r.Remarks, r.OriginOffice].map(s_).join(' ').toLowerCase();
       if (!words.every(w => hay.indexOf(w) >= 0)) continue;
     }
     matched++;
@@ -750,8 +781,14 @@ function fields_(raw, isNew) {
     f.Category = cat;
   }
   const txt = (k, max) => { if (raw[k] !== undefined) f[k] = s_(raw[k]).slice(0, max); };
-  txt('DocType', 60); txt('Subject', 600); txt('FromParty', 300); txt('ToParty', 300); txt('RefNo', 120);
-  txt('ActionRequired', 120); txt('Remarks', 1500);
+  if (raw.FromOffice === undefined && raw.FromParty !== undefined) raw = Object.assign({}, raw, { FromOffice: raw.FromParty });
+  txt('DocType', 60); txt('Subject', 600); txt('FromOffice', 200); txt('FromPerson', 200); txt('ToParty', 300); txt('RefNo', 120);
+  txt('Remarks', 1500);
+  if (raw.ActionRequired !== undefined) {                 // several can be ticked: "For information; For file"
+    const parts = [];
+    [].concat(raw.ActionRequired).join(';').split(';').map(x => s_(x)).forEach(x => { if (x && parts.indexOf(x) < 0) parts.push(x); });
+    f.ActionRequired = parts.join('; ').slice(0, 400);
+  }
   if (raw.Priority !== undefined) f.Priority = PRIORITIES.indexOf(s_(raw.Priority)) >= 0 ? s_(raw.Priority) : 'Normal';
   if (raw.Pages !== undefined) f.Pages = s_(raw.Pages) === '' ? '' : Math.max(0, Math.floor(n_(raw.Pages)));
   if (raw.DocDate !== undefined) f.DocDate = dateIn_(raw.DocDate);
@@ -806,6 +843,73 @@ function restoreParent_(c, m, why) {
   save_(c.mov, p);
 }
 
+/* ================================================================ FILE NUMBERS
+   The suggestion is the number after the latest logged record, skipping numbers already used.
+   The person logging may type another number; it must not be in use. */
+function usedNos_(recs) { const u = {}; recs.forEach(r => { const n = n_(r.TrackNo); if (n) u[n] = 1; }); return u; }
+function nextNo_(recs, set, used) {
+  used = used || usedNos_(recs);
+  let latest = null;
+  recs.forEach(r => { if (n_(r.TrackNo) && (!latest || (ms_(r.CreatedAt) || 0) >= (ms_(latest.CreatedAt) || 0))) latest = r; });
+  let n = Math.max(latest ? n_(latest.TrackNo) + 1 : 1, Math.floor(n_(set.START_NUMBER)) || 1);
+  while (used[n]) n++;
+  return n;
+}
+function pickNo_(c, op) {
+  const used = usedNos_(c.rec.rows);
+  const typed = s_(op.fileNo).replace(/^no\.?\s*/i, '').replace(/^#/, '');
+  if (!typed) return nextNo_(c.rec.rows, c.set, used);
+  if (!/^\d{1,9}$/.test(typed) || Number(typed) < 1) fail_('Type the file number as digits only, like 125.');
+  let n = Number(typed);
+  if (used[n]) {
+    if (op.fileNoAuto) { while (used[n]) n++; return n; }  // the suggested number was taken a moment ago: take the next free one
+    fail_('No. ' + n + ' is already used. The next free number is ' + nextNo_(c.rec.rows, c.set, used) + '.');
+  }
+  return n;
+}
+
+/** The log form asks this before it closes, so a typed number already in use is caught while the form is still open. */
+function apiCheckNo(token, no) {
+  const user = auth_(token);
+  const set = settings_();
+  const recs = table_(SH.REC).rows;
+  const used = usedNos_(recs);
+  const n = Number(s_(no).replace(/^no\.?\s*/i, '').replace(/^#/, ''));
+  return { no: n, used: !!(n && used[n]), next: canLog_(user, set) ? nextNo_(recs, set, used) : '' };
+}
+
+/* ================================================================ SUGGESTIONS FOR THE LOG FORM
+   Earlier entries (newest first), so the person logging picks instead of retyping. */
+function apiSuggest(token) {
+  const user = auth_(token);
+  const set = settings_();
+  const all = seeAll_(user, set);
+  const recs = table_(SH.REC).rows;
+  const offices = [], persons = [], tos = [], subjects = [];
+  const seen = { o: {}, p: {}, t: {}, s: {} };
+  const put = (list, key, v, extra) => {
+    v = s_(v);
+    const k = v.toLowerCase();
+    if (!v || seen[key][k]) return;
+    seen[key][k] = 1;
+    list.push(extra ? Object.assign({ v: v }, extra) : v);
+  };
+  for (let i = recs.length - 1, k = 0; i >= 0 && k < 3000; i--) {
+    const r = recs[i];
+    if (!all && s_(r.OriginOffice) !== user.office) continue;
+    k++;
+    const o = s_(r.FromOffice) || s_(r.FromParty);
+    put(offices, 'o', o);
+    if (s_(r.FromPerson)) put(persons, 'p', r.FromPerson, { o: o });
+    put(tos, 't', r.ToParty);
+    if (subjects.length < 300) put(subjects, 's', r.Subject);
+  }
+  return {
+    next: canLog_(user, set) ? nextNo_(recs, set) : '',
+    offices: offices.slice(0, 500), persons: persons.slice(0, 500), to: tos.slice(0, 300), subjects: subjects
+  };
+}
+
 const ACT = {
   CREATE(c, op) {
     if (!canLog_(c.user, c.set)) {
@@ -817,8 +921,8 @@ const ACT = {
     }
     const f = fields_(op.fields, true);
     if (!f.Priority) f.Priority = 'Normal';
-    const max = c.rec.rows.reduce((x, r) => Math.max(x, n_(r.TrackNo)), 0);
-    const no = Math.max(max + 1, Math.floor(n_(c.set.START_NUMBER)) || 1);
+    if (f.Category === 'INCOMING' && !f.DocDate) fail_('Type the document date (the date written on the incoming document).');
+    const no = pickNo_(c, op);
     const r = Object.assign({}, f, {
       TrackNo: no, OriginOffice: c.office, CreatedAt: c.now, CreatedBy: c.user.username, CreatedByName: c.user.name,
       UpdatedAt: c.now, OpId: s_(op.opId)
@@ -916,6 +1020,7 @@ const ACT = {
     if (!c.isAdmin && s_(r.OriginOffice) !== c.office) fail_('Only ' + s_(r.OriginOffice) + ', the office that logged it, can edit the details.');
     const f = fields_(op.fields, false);
     const changes = [];
+    if (f.FromOffice !== undefined && s_(r.FromParty) && !s_(r.FromOffice)) { r.FromOffice = s_(r.FromParty); r.FromParty = ''; }
     Object.keys(f).forEach(k => {
       const before = (k === 'DocDate' || k === 'DueDate') ? dateOut_(r[k]) : s_(r[k]);
       const after = s_(f[k]);
@@ -1061,6 +1166,7 @@ function apiAdminSave(token, kind, o, opId) {
 function setupSystem() {
   const ss = ss_();
   const made = [];
+  migrateFrom_(ss);
   Object.keys(COLS).forEach(name => { if (ensureSheet_(ss, name, COLS[name])) made.push(name); });
 
   const lines = [];
@@ -1104,6 +1210,7 @@ function setupSystem() {
     } catch (e) { lines.push('Could not make the scans folder (' + e.message + '). Put a folder link in Settings ▸ FILES_FOLDER_ID.'); }
   }
 
+  PropertiesService.getScriptProperties().setProperty('SCHEMA', SCHEMA);
   const blank = ss.getSheetByName('Sheet1');
   if (blank && ss.getSheets().length > 1 && blank.getLastRow() === 0) { try { ss.deleteSheet(blank); } catch (e) { /* keep it */ } }
   bump_();

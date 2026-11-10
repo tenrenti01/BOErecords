@@ -41,11 +41,12 @@ Route and track letters and memos across the Bureau of Equipment (DPWH), from th
 ## Updating later
 - **Screen changes** (`index.html` and the other files): upload the new file to GitHub. Live in 1–2 minutes.
 - **Server changes** (`Code.gs`): paste the new code in Apps Script, then **Deploy ▸ Manage deployments ▸ ✏️ Edit ▸ Version: New version ▸ Deploy**. The `/exec` link stays the same, so `config.js` doesn't change.
+- **New columns** (for example From (office) and From (person)): the server adds them to the Records sheet by itself on the first use after the update. You don't edit the sheet.
 
 ## Settings (in the Google Sheet, tab "Settings")
 - `LOG_OFFICES`: offices that log new records and give tracking numbers (default `OD,ADMIN`; `ALL` lets every office log).
 - `SEE_ALL_OFFICES`: offices that can open every record (default `OD,OAD,ADMIN`).
-- `START_NUMBER`: lowest tracking number to give (raise it to continue a paper logbook).
+- `START_NUMBER`: lowest file number to suggest. The log form fills in the number after the latest one; you can type another number as long as it is not used yet.
 - `AUTO_FIND_SCANS`: attaches a scan when a file in the scans folder starts with the tracking number, e.g. `25 - Letter.pdf`.
 - `POLL_SECONDS`: how often each screen checks for new documents.
 - Offices and units: sign in as `admin` ▸ **Admin ▸ Offices**. Add a unit with Level **Unit** and its section as the parent.

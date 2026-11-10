@@ -2,7 +2,7 @@
 <html lang="en" class="classic">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>BOE Records Management System</title>
 <meta name="theme-color" content="#F0F0F0">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -117,7 +117,8 @@ em{font-style:normal}
 .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 14px}
 .seg{display:flex;padding:3px;border-radius:12px;background:#f1f4f9;box-shadow:inset 0 0 0 1px var(--line);gap:3px}
 .seg label{flex:1;text-align:center;height:34px;line-height:34px;border-radius:9px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .25s var(--ease)}
-.seg input,.seg3 input{position:absolute;opacity:0;pointer-events:none}
+.seg label,.segc{position:relative}
+.seg input,.seg3 input{position:absolute;opacity:0;pointer-events:none;width:1px!important;height:1px!important;left:0;top:0;margin:0}
 .seg label.on{background:#fff;color:var(--ink);box-shadow:0 2px 8px rgba(16,30,60,.12)}
 .seg label.on.pr-Urgent{color:#b26b00}
 .seg label.on.pr-Rush{color:var(--red)}
@@ -812,6 +813,65 @@ html.classic .lg-foot{clear:both;padding-top:10px;text-align:left;font-size:11px
   html.classic .undo-stack{right:6px;left:6px;bottom:10px;align-items:stretch}
   html.classic .undo{min-width:0;width:auto}
 }
+
+/* ---- log form: suggestions from earlier logs, several actions, file no. */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
+.f.sgw{position:relative}
+.sg{position:absolute;left:0;right:0;top:100%;z-index:70;max-height:236px;overflow:auto;-webkit-overflow-scrolling:touch;background:#fff;border:1px solid #7A7A7A;box-shadow:2px 3px 8px rgba(0,0,0,.18);margin-top:-1px}
+.sg-h{padding:3px 8px;font:11px Tahoma,Verdana,sans-serif;color:#666;background:#F7F7F7;border-bottom:1px solid #E0E0E0}
+.sg-i{display:block;width:100%;text-align:left;padding:4px 8px;font:12px Tahoma,Verdana,sans-serif;color:#000;border-bottom:1px solid #F2F2F2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-radius:0}
+.sg-i small{color:#666;margin-left:8px;font-size:11px}
+.sg-i mark{background:none;color:#000;font-weight:bold}
+.sg-i:hover,.sg-i.on{background:#CCE8FF}
+.f .req{color:#C00000;font-weight:bold}
+.f .fh{display:block;font:11px Tahoma,Verdana,sans-serif;color:#555;margin-top:2px}
+.f .fh.bad{color:#C00000}
+.mchk{display:grid;grid-template-columns:1fr 1fr;gap:0 12px;border:1px solid #7A7A7A;background:#fff;padding:3px 6px}
+.mchk label{display:flex;align-items:center;gap:6px;padding:3px 2px;font:12px Tahoma,Verdana,sans-serif;color:#000;cursor:pointer;min-width:0}
+.mchk label.on{font-weight:bold}
+html.classic .f .mchk input[type=checkbox]{width:13px;height:13px;margin:0;padding:0;flex:none;border:0;box-shadow:none;background:none;-webkit-appearance:checkbox;appearance:auto}
+.f>span small{font-weight:normal;color:#666}
+
+/* ---- details pane: hide / show (more room for the scan) */
+html.classic .cph .tgl{height:20px;padding:0 6px;margin-right:2px;display:inline-flex;align-items:center;gap:3px;border:1px solid #ADADAD;border-radius:2px;background:linear-gradient(#FDFDFD,#E9E9E9);font:11px var(--tf);font-weight:normal;color:#000;white-space:nowrap}
+html.classic .cph .tgl:hover{background:linear-gradient(#EAF6FD,#D9F0FC);border-color:#3C7FB1}
+html.classic .cph .tgl .ic{width:12px;height:12px}
+html.classic .cview.noside{flex-direction:column}
+html.classic .cview.noside .cside{width:auto;flex:none;overflow:visible}
+html.classic .cview.noside .cdet{display:none}
+html.classic .cview.noside .cact .cpb{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;padding:4px 8px}
+html.classic .cview.noside .cact .v-now{margin:0}
+html.classic .cview.noside .cmainp{flex:1;min-height:0}
+
+@media (max-width:900px),(pointer:coarse){
+  /* iPhone Safari zooms into any box with text under 16px: keep every box at 16px */
+  html.classic input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]),html.classic select,html.classic textarea{font-size:16px!important}
+  html.classic .f input,html.classic .f select{height:30px}
+}
+@media (max-width:900px){
+  html.classic body{overflow-x:hidden;overflow-y:auto;overscroll-behavior-x:none;max-width:100%}
+  html.classic .app,html.classic .shell,html.classic .main{max-width:100vw;min-width:0}
+  html.classic select.sel,html.classic .ctool select,html.classic .tools select{max-width:100%;min-width:0}
+  html.classic .ctool>*,html.classic .tools>*{max-width:100%}
+  html.classic .grid td.nw{white-space:normal}
+  html.classic .grid .pill{white-space:normal;height:auto;line-height:1.25;padding-top:1px;padding-bottom:1px}
+  html.classic .grid .mh{display:none}
+  html.classic .grid td.sj{min-width:120px}
+  html.classic .f input,html.classic .f select{height:36px}
+  html.classic .f textarea{min-height:64px}
+  html.classic .modal{padding:0;place-items:stretch}
+  html.classic .dlg,html.classic .dlg.wide{width:100%;max-width:100%;height:100%;max-height:100%;border:0}
+  html.classic .dlg-b{-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+  html.classic .dlg .grid3{grid-template-columns:1fr 1fr}
+  html.classic .dlg .grid3>:last-child{grid-column:1/-1}
+  .sg{max-height:200px}
+  .sg-i{padding:9px 10px;font-size:15px}
+  .sg-i small{font-size:13px}
+  .mchk label{padding:7px 2px;font-size:14px}
+  html.classic .f .mchk input[type=checkbox]{width:18px;height:18px}
+  html.classic .cview.noside .cmainp{min-height:calc(100vh - 140px);min-height:calc(100dvh - 140px)}
+  html.classic .cview.noside .scan iframe{min-height:calc(100vh - 230px);min-height:calc(100dvh - 230px)}
+}
 </style>
 </head>
 <body>
@@ -906,6 +966,7 @@ html.classic .lg-foot{clear:both;padding-top:10px;text-align:left;font-size:11px
     set: function (k, v) { try { window.localStorage.setItem(k, v); } catch (e) { } },
     del: function (k) { try { window.localStorage.removeItem(k); } catch (e) { } }
   };
+  var TOUCH = (function () { try { return window.matchMedia('(pointer:coarse)').matches; } catch (e) { return false; } })();
   function el(html) { var t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; }
   function opid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 10); }
 
@@ -1543,9 +1604,9 @@ html.classic .lg-foot{clear:both;padding-top:10px;text-align:left;font-size:11px
   function renderOrgClassic(main, silent) {
     var counts = S.board.counts || {}, me = S.me.office, under = underSet(me), all = S.board.seeAll;
     var list = orgList().filter(function (o) { return o.active !== false; });
-    var html = '<table class="grid"><thead><tr><th>Office</th><th>Code</th><th>Level</th><th>Head</th><th>Inbox</th><th>On hand</th><th>Overdue</th></tr></thead><tbody>' + list.map(function (o) {
+    var html = '<table class="grid"><thead><tr><th>Office</th><th class="mh">Code</th><th class="mh">Level</th><th class="mh">Head</th><th>Inbox</th><th>On hand</th><th class="mh">Overdue</th></tr></thead><tbody>' + list.map(function (o) {
       var k = counts[o.code] || { p: 0, h: 0, late: 0 }, mine = all || under[o.code];
-      return '<tr class="trow ' + (o.code === me ? 'viewing' : '') + (mine ? '' : ' dim') + '" data-code="' + esc(o.code) + '"><td class="nw" style="padding-left:' + (6 + o.depth * 20) + 'px">' + (o.depth ? '<span class="tree">└ </span>' : '') + ic('building', 'fi') + ' ' + esc(o.name) + '</td><td>' + codeChip(o.code) + '</td><td>' + esc(o.level) + '</td><td>' + esc(o.head) + '</td><td class="num">' + (k.p ? '<b>' + k.p + '</b>' : '0') + '</td><td class="num">' + k.h + '</td><td class="num ' + (k.late ? 'late' : '') + '">' + (k.late ? '<b>' + k.late + '</b>' : '0') + '</td></tr>';
+      return '<tr class="trow ' + (o.code === me ? 'viewing' : '') + (mine ? '' : ' dim') + '" data-code="' + esc(o.code) + '"><td class="nw" style="padding-left:' + (6 + o.depth * 20) + 'px">' + (o.depth ? '<span class="tree">└ </span>' : '') + ic('building', 'fi') + ' ' + esc(o.name) + '</td><td class="mh">' + codeChip(o.code) + '</td><td class="mh">' + esc(o.level) + '</td><td class="mh">' + esc(o.head) + '</td><td class="num">' + (k.p ? '<b>' + k.p + '</b>' : '0') + '</td><td class="num">' + k.h + '</td><td class="num mh ' + (k.late ? 'late' : '') + '">' + (k.late ? '<b>' + k.late + '</b>' : '0') + '</td></tr>';
     }).join('') + '</tbody></table>';
     if (!silent || main.getAttribute('data-page') !== 'org' || main.getAttribute('data-mode') !== 'c') {
       main.setAttribute('data-page', 'org'); main.setAttribute('data-mode', 'c');
@@ -1735,24 +1796,138 @@ html.classic .lg-foot{clear:both;padding-top:10px;text-align:left;font-size:11px
   }
 
   // ---------- new / edit record
-  function recFormHTML(r) {
+  function recFormHTML(r, fileNo) {
     r = r || {};
     var L = S.boot.lists, cat = r.cat || 'INCOMING', prio = r.prio || 'Normal';
     var opt = function (list, v) { return list.map(function (x) { return '<option ' + (x === v ? 'selected' : '') + '>' + esc(x) + '</option>'; }).join(''); };
+    var acts = String(r.action || '').split(';').map(function (x) { return x.trim(); }).filter(Boolean);
+    var actList = L.purposes.concat(acts.filter(function (a) { return L.purposes.indexOf(a) < 0; }));
+    var isNew = fileNo !== undefined;
     return '<div class="seg3">' + Object.keys(L.cats).map(function (k) {
       return '<label class="segc ' + (k === cat ? 'on' : '') + '"><input type="radio" name="Category" value="' + k + '" ' + (k === cat ? 'checked' : '') + '><span class="sg-ic">' + ic(CAT[k].icon) + '</span><b>' + esc(L.cats[k]) + '</b><small>' + esc(CAT[k].hint) + '</small></label>';
     }).join('') + '</div>' +
+      '<div class="' + (isNew ? 'grid3' : 'grid2') + '">' +
+      (isNew ? '<label class="f"><span>File no.</span><input name="FileNo" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="9" value="' + esc(fileNo) + '" data-auto="1"><small class="fh" data-fh>Next after the latest. You may type another.</small></label>' : '') +
+      '<label class="f"><span>Document date <span class="req" data-ddreq ' + (cat === 'INCOMING' ? '' : 'hidden') + '>*</span></span><input type="date" name="DocDate" value="' + esc(r.docDate || '') + '"><small class="fh" data-ddh ' + (cat === 'INCOMING' ? '' : 'hidden') + '>Date written on the document</small></label>' +
+      '<label class="f"><span>Ref. no.</span><input name="RefNo" autocomplete="off" value="' + esc(r.ref || '') + '" placeholder="Number on the document"></label></div>' +
       '<div class="grid2"><label class="f"><span>Type</span><select name="DocType"><option></option>' + opt(L.docTypes, r.type) + '</select></label>' +
       '<div class="f"><span>Priority</span><div class="seg">' + L.priorities.map(function (x) { return '<label class="pr-' + x + ' ' + (x === prio ? 'on' : '') + '"><input type="radio" name="Priority" value="' + x + '" ' + (x === prio ? 'checked' : '') + '>' + x + '</label>'; }).join('') + '</div></div></div>' +
-      '<label class="f"><span>Subject *</span><textarea name="Subject" rows="2" placeholder="What is the document about?">' + esc(r.subject || '') + '</textarea></label>' +
-      '<div class="grid2"><label class="f"><span>From</span><input name="FromParty" value="' + esc(r.fromP || '') + '" placeholder="Sender: office, agency or person"></label>' +
-      '<label class="f"><span>To</span><input name="ToParty" value="' + esc(r.toP || '') + '" placeholder="Addressee"></label></div>' +
-      '<div class="grid3"><label class="f"><span>Ref. no.</span><input name="RefNo" value="' + esc(r.ref || '') + '"></label>' +
-      '<label class="f"><span>Document date</span><input type="date" name="DocDate" value="' + esc(r.docDate || '') + '"></label>' +
-      '<label class="f"><span>Pages</span><input type="number" min="0" name="Pages" value="' + esc(r.pages || '') + '"></label></div>' +
-      '<div class="grid2"><label class="f"><span>Action required</span><select name="ActionRequired"><option></option>' + opt(L.purposes, r.action) + '</select></label>' +
-      '<label class="f"><span>Due date</span><input type="date" name="DueDate" value="' + esc(r.due || '') + '"></label></div>' +
+      '<label class="f"><span>Subject *</span><textarea name="Subject" rows="2" autocomplete="off" placeholder="What is the document about?">' + esc(r.subject || '') + '</textarea></label>' +
+      '<div class="grid2"><label class="f"><span>From (office)</span><input name="FromOffice" autocomplete="off" value="' + esc((r.fromO !== undefined ? r.fromO : r.fromP) || '') + '" placeholder="Office or agency that sent it"></label>' +
+      '<label class="f"><span>From (person)</span><input name="FromPerson" autocomplete="off" value="' + esc(r.fromN || '') + '" placeholder="Name and position of the sender"></label></div>' +
+      '<label class="f"><span>To</span><input name="ToParty" autocomplete="off" value="' + esc(r.toP || '') + '" placeholder="Addressee"></label>' +
+      '<div class="f"><span>Action required <small>(tick all that apply)</small></span><div class="mchk">' + actList.map(function (x) {
+        var on = acts.indexOf(x) >= 0;
+        return '<label class="' + (on ? 'on' : '') + '"><input type="checkbox" data-act value="' + esc(x) + '" ' + (on ? 'checked' : '') + '><span>' + esc(x) + '</span></label>';
+      }).join('') + '</div></div>' +
+      '<div class="grid2"><label class="f"><span>Due date</span><input type="date" name="DueDate" value="' + esc(r.due || '') + '"></label>' +
+      '<label class="f"><span>Pages</span><input type="number" inputmode="numeric" min="0" name="Pages" value="' + esc(r.pages || '') + '"></label></div>' +
       '<label class="f"><span>Remarks</span><textarea name="Remarks" rows="2">' + esc(r.remarks || '') + '</textarea></label>';
+  }
+  /** Values of the log form, ready for the server. */
+  function recFields(root) {
+    var v = formVals(root);
+    var acts = $$('[data-act]', root).filter(function (i) { return i.checked; }).map(function (i) { return i.value; });
+    var both = [String(v.FromOffice || '').trim(), String(v.FromPerson || '').trim()].filter(Boolean).join(' · ');
+    return { Category: v.Category, DocType: v.DocType, Subject: v.Subject, FromOffice: v.FromOffice, FromPerson: v.FromPerson, FromParty: both, ToParty: v.ToParty, RefNo: v.RefNo,
+      DocDate: v.DocDate, Priority: v.Priority, ActionRequired: acts.join('; '), DueDate: v.DueDate, Pages: v.Pages, Remarks: v.Remarks };
+  }
+  function checkRec(f, err) {
+    if (!String(f.Subject || '').trim()) { err('Type the subject.'); return false; }
+    if (f.Category === 'INCOMING' && !f.DocDate) { err('Type the document date (the date written on the incoming document).'); var d = $('.dlg [name=DocDate]'); if (d) d.focus(); return false; }
+    return true;
+  }
+  /** Category switch, tick boxes, and suggestions from earlier logs. */
+  function wireRecForm(root) {
+    var syncCat = function () {
+      var c = ($('[name=Category]:checked', root) || {}).value;
+      $$('[data-ddreq],[data-ddh]', root).forEach(function (x) { x.hidden = c !== 'INCOMING'; });
+    };
+    root.addEventListener('change', function (e) {
+      if (e.target.name === 'Category') syncCat();
+      if (e.target.hasAttribute('data-act')) e.target.closest('label').classList.toggle('on', e.target.checked);
+    });
+    var fno = $('[name=FileNo]', root);
+    if (fno) fno.addEventListener('input', function () {
+      fno.setAttribute('data-auto', '0');
+      fno.value = fno.value.replace(/[^0-9]/g, '');
+      var h = $('[data-fh]', root); h.classList.remove('bad');
+      h.textContent = fno.value ? 'You typed this number. It must not be used yet.' : 'Left blank: the next number is given when it saves.';
+    });
+    var office = $('[name=FromOffice]', root);
+    attachSuggest(office, function () {
+      var d = suggData(), out = d.offices.slice();
+      orgList().forEach(function (o) { out.push(o.name); });
+      return out.map(function (v) { return { v: v }; });
+    }, 'Earlier senders');
+    attachSuggest($('[name=FromPerson]', root), function () {
+      var d = suggData(), o = office.value.trim().toLowerCase();
+      var list = d.persons.map(function (p) { return { v: p.v, o: p.o }; });
+      if (o) list.sort(function (a, b) { return ((b.o || '').toLowerCase() === o) - ((a.o || '').toLowerCase() === o); });
+      return list;
+    }, 'Earlier senders', function (it) { if (it.o && !office.value.trim()) office.value = it.o; });
+    attachSuggest($('[name=ToParty]', root), function () { return suggData().to.map(function (v) { return { v: v }; }); }, 'Earlier addressees');
+    attachSuggest($('[name=Subject]', root), function () { return suggData().subjects.map(function (v) { return { v: v }; }); }, 'Earlier subjects', null, true);
+  }
+  function suggKey() { return 'rms.sugg.' + ((S.me && S.me.username) || ''); }
+  function suggData() {
+    if (!S.sugg) { try { S.sugg = JSON.parse(store.get(suggKey()) || 'null'); } catch (e) { S.sugg = null; } }
+    var d = S.sugg || {};
+    return { offices: d.offices || [], persons: d.persons || [], to: d.to || [], subjects: d.subjects || [], next: d.next };
+  }
+  function loadSugg() {
+    return call('apiSuggest', [S.token], 2).then(function (r) { S.sugg = r; store.set(suggKey(), JSON.stringify(r)); return r; }).catch(function () { return null; });
+  }
+  /** A drop-down list of earlier entries under a text box. Typing narrows it; tap or Enter picks one. */
+  function attachSuggest(inp, source, title, onPick, onlyTyped) {
+    if (!inp) return;
+    var wrap = inp.closest('.f'), box = null, items = [], hi = -1, timer = 0;
+    wrap.classList.add('sgw');
+    var close = function () { if (box) { box.remove(); box = null; } hi = -1; };
+    var mark = function (v, q) {
+      var i = q ? v.toLowerCase().indexOf(q) : -1;
+      return i < 0 ? esc(v) : esc(v.slice(0, i)) + '<mark>' + esc(v.slice(i, i + q.length)) + '</mark>' + esc(v.slice(i + q.length));
+    };
+    var render = function () {
+      var q = inp.value.trim().toLowerCase();
+      if (onlyTyped && q.length < 2) { close(); return; }
+      var seen = {}, first = [], rest = [];
+      source().forEach(function (it) {
+        var k = it.v.toLowerCase();
+        if (!it.v || seen[k] || k === q) return;
+        seen[k] = 1;
+        if (!q) first.push(it);
+        else if (k.indexOf(q) === 0) first.push(it);
+        else if (k.indexOf(q) > 0 || (it.o && it.o.toLowerCase().indexOf(q) >= 0)) rest.push(it);
+      });
+      items = first.concat(rest).slice(0, q ? 30 : 8);
+      if (!items.length) { close(); return; }
+      if (!box) {
+        box = el('<div class="sg" role="listbox"></div>');
+        wrap.appendChild(box);
+        box.addEventListener('mousedown', function (e) { e.preventDefault(); });
+        box.addEventListener('click', function (e) { var b = e.target.closest('[data-i]'); if (b) pick(Number(b.getAttribute('data-i'))); });
+      }
+      box.innerHTML = '<div class="sg-h">' + esc(q ? 'Matches from earlier logs' : title) + '</div>' + items.map(function (it, i) {
+        return '<button type="button" class="sg-i' + (i === hi ? ' on' : '') + '" data-i="' + i + '" role="option">' + mark(it.v, q) + (it.o ? '<small>' + esc(it.o) + '</small>' : '') + '</button>';
+      }).join('');
+      var on = $('.sg-i.on', box); if (on) on.scrollIntoView({ block: 'nearest' });
+    };
+    var pick = function (i) {
+      var it = items[i]; if (!it) return;
+      inp.value = it.v; close();
+      if (onPick) onPick(it);
+    };
+    inp.addEventListener('focus', function () { clearTimeout(timer); render(); });
+    inp.addEventListener('input', function () { hi = -1; render(); });
+    inp.addEventListener('blur', function () { timer = setTimeout(close, 180); });
+    inp.addEventListener('keydown', function (e) {
+      if (!box) return;
+      if (e.key === 'ArrowDown') { hi = Math.min(items.length - 1, hi + 1); render(); e.preventDefault(); }
+      else if (e.key === 'ArrowUp') { hi = Math.max(-1, hi - 1); render(); e.preventDefault(); }
+      else if (e.key === 'Enter' && hi >= 0) { e.preventDefault(); e.stopPropagation(); pick(hi); }
+      else if (e.key === 'Escape') { e.stopPropagation(); close(); }
+    });
   }
   function formVals(root) {
     var o = {};
@@ -1776,7 +1951,13 @@ html.classic .lg-foot{clear:both;padding-top:10px;text-align:left;font-size:11px
   }
   function newRecordDlg() {
     var body = el('<div></div>');
-    body.innerHTML = '<div class="hint">' + ic('info') + '<div>This will be <b>No. ' + esc(S.board.next || '…') + '</b> (the next number is given when it saves). It starts <b>On hand</b> in ' + esc(S.me.office) + '.</div></div>' + recFormHTML({});
+    var sugNo = String(suggData().next && suggData().next > (S.board.next || 0) ? suggData().next : (S.board.next || ''));
+    body.innerHTML = '<div class="hint">' + ic('info') + '<div>It starts <b>On hand</b> in ' + esc(S.me.office) + '. Boxes remember earlier entries: tap one to pick it.</div></div>' + recFormHTML({}, sugNo);
+    wireRecForm(body);
+    loadSugg().then(function (r) {
+      var f = $('[name=FileNo]', body);
+      if (r && r.next && f && f.getAttribute('data-auto') === '1') { f.value = String(r.next); sugNo = String(r.next); }
+    });
     var fb = fileBox(); body.appendChild(fb);
     var sendTog = el('<label class="opt"><input type="checkbox" name="sendNow"> Send it right away</label>');
     body.appendChild(sendTog);
@@ -1787,20 +1968,30 @@ html.classic .lg-foot{clear:both;padding-top:10px;text-align:left;font-size:11px
     body.appendChild(sendBox);
     $('input', sendTog).addEventListener('change', function (e) { sendBox.hidden = !e.target.checked; });
     dialog({
-      title: 'New record', sub: 'Log a document and give it a tracking number.', icon: 'plus', tile: 'or', ok: 'Save record', okCls: 'btn-o', okIcon: 'check', wide: true, body: body,
+      title: 'New record', sub: 'Log a document and give it a file number.', icon: 'plus', tile: 'or', ok: 'Save record', okCls: 'btn-o', okIcon: 'check', wide: true, body: body,
       onOk: async function (b, err, okBtn) {
-        var v = formVals(b);
-        if (!String(v.Subject || '').trim()) { err('Type the subject.'); return false; }
+        var v = formVals(b), fields = recFields(b);
+        if (!checkRec(fields, err)) return false;
+        var fileNo = String(v.FileNo || '').trim(), fileNoAuto = !fileNo || $('[name=FileNo]', b).getAttribute('data-auto') === '1' || fileNo === sugNo;
+        if (fileNo && !/^[0-9]{1,9}$/.test(fileNo)) { err('Type the file number as digits only, like 125.'); return false; }
+        if (fileNo && !fileNoAuto) {
+          okBtn.disabled = true;
+          try {
+            var ck = await call('apiCheckNo', [S.token, fileNo], 3);
+            if (ck.used) { okBtn.disabled = false; err('No. ' + fileNo + ' is already used. The next free number is ' + ck.next + '.'); var h = $('[data-fh]', b); if (h) { h.textContent = 'Already used. Next free: ' + ck.next; h.classList.add('bad'); } return false; }
+          } catch (e0) { if (!/Unknown request/.test(errText(e0))) { okBtn.disabled = false; err(errText(e0)); return false; } }
+          okBtn.disabled = false;
+        }
         var send = null;
         if (v.sendNow) { var to = pk.value(); if (!to.length) { err('Pick at least one office to send it to, or untick "Send it right away".'); return false; } send = { to: to, purpose: v.sPurpose, note: (v.sNote || '').trim() }; }
         var f = fb.file(), data = null;
         if (f) { okBtn.disabled = true; try { data = await readFile(f); } catch (e2) { okBtn.disabled = false; err(errText(e2)); return false; } okBtn.disabled = false; }
-        var fields = { Category: v.Category, DocType: v.DocType, Subject: v.Subject, FromParty: v.FromParty, ToParty: v.ToParty, RefNo: v.RefNo, DocDate: v.DocDate, Priority: v.Priority, ActionRequired: v.ActionRequired, DueDate: v.DueDate, Pages: v.Pages, Remarks: v.Remarks };
         var ids = { c: opid(), u: opid(), a: opid() };
         schedule({
           verb: 'Saving', label: 'Saving new record' + (send ? ' and sending to ' + send.to.join(', ') : ''), icon: 'plus', tile: 'or',
           run: async function () {
-            var res = await act({ opId: ids.c, type: 'CREATE', fields: fields, send: send });
+            var res = await act({ opId: ids.c, type: 'CREATE', fields: fields, send: send, fileNo: fileNo, fileNoAuto: fileNoAuto });
+            loadSugg();
             if (data) {
               try {
                 var up = await call('apiUpload', [S.token, { opId: ids.u, name: res.no + ' - ' + String(fields.Subject).slice(0, 80) + data.ext, mime: data.mime, b64: data.b64 }]);
@@ -1820,9 +2011,10 @@ html.classic .lg-foot{clear:both;padding-top:10px;text-align:left;font-size:11px
     var r = d.rec;
     dialog({
       title: 'Edit No. ' + r.no, sub: 'Changes are written to the history.', icon: 'edit', tile: 'navy', ok: 'Save changes', okCls: 'btn-n', okIcon: 'check', wide: true, body: recFormHTML(r),
+      onOpen: function (b) { wireRecForm(b); loadSugg(); },
       onOk: function (b, err) {
-        var v = formVals(b);
-        if (!String(v.Subject || '').trim()) { err('The subject cannot be blank.'); return false; }
+        var v = recFields(b);
+        if (!checkRec(v, err)) return false;
         var op = { opId: opid(), type: 'EDIT', no: r.no, fields: v };
         schedule({ verb: 'Saving', label: 'Saving changes to No. ' + r.no, icon: 'edit', tile: 'navy', run: function () { return act(op); }, ok: function (x) { return x.unchanged ? 'Nothing was changed.' : 'No. ' + r.no + ' updated.'; }, fail: 'Changes not saved' });
       }
@@ -1899,7 +2091,7 @@ html.classic .lg-foot{clear:both;padding-top:10px;text-align:left;font-size:11px
     if (okBtn) okBtn.onclick = submit;
     body.onsubmit = function (e) { e.preventDefault(); submit(); };
     if (o.onOpen) o.onOpen(body, node, close);
-    setTimeout(function () { var f = $('textarea, input:not([type=radio]):not([type=checkbox]):not([type=file]):not([type=search]), select', body); if (f && !o.noFocus) f.focus(); }, 80);
+    setTimeout(function () { var f = $('textarea, input:not([type=radio]):not([type=checkbox]):not([type=file]):not([type=search]), select', body); if (f && !o.noFocus && !TOUCH) f.focus(); }, 80);
     S.dlg = { close: close };
     return { close: close, body: body, err: err };
   }
@@ -2004,21 +2196,25 @@ html.classic .lg-foot{clear:both;padding-top:10px;text-align:left;font-size:11px
     var d = v.data, r = d.rec, due = dueInfo(r);
     if (!v.tab || v.tab === 'info') v.tab = S.ctab || 'route';
     var row = function (l, val) { return val ? '<tr><th>' + l + '</th><td>' + val + '</td></tr>' : ''; };
-    var props = '<table class="props">' + row('Tracking no.', '<b>' + r.no + '</b>') + row('Category', esc(catName(r.cat))) + row('Type', esc(r.type)) +
-      row('Subject', '<b>' + esc(r.subject) + '</b>') + row('From', esc(r.fromP)) + row('To', esc(r.toP)) + row('Ref. no.', esc(r.ref)) +
+    var props = '<table class="props">' + row('File no.', '<b>' + r.no + '</b>') + row('Category', esc(catName(r.cat))) + row('Type', esc(r.type)) +
+      row('Subject', '<b>' + esc(r.subject) + '</b>') + row('From (office)', esc(r.fromO !== undefined ? r.fromO : r.fromP)) + row('From (person)', esc(r.fromN)) + row('To', esc(r.toP)) + row('Ref. no.', esc(r.ref)) +
       row('Document date', esc(fmtD(r.docDate))) + row('Priority', r.prio !== 'Normal' ? '<b class="pr pr-' + esc(r.prio) + '">' + esc(r.prio) + '</b>' : 'Normal') +
       row('Action required', esc(r.action)) + row('Due date', r.due ? '<span class="' + (due ? due.cls : '') + '">' + esc(fmtD(r.due)) + (due && due.cls === 'late' ? ' (overdue)' : '') + '</span>' : '') +
       row('Pages', esc(r.pages)) + row('Logged by', esc(r.createdBy) + ' · ' + esc(r.origin)) + row('Logged on', esc(fmtDT(r.createdAt))) +
       row('Last update', esc(fmtDT(r.updatedAt))) + row('Remarks', esc(r.remarks)) + '</table>';
-    var side = '<div class="cside"><div class="cpanel"><div class="cph">' + ic('hand') + 'No. ' + r.no + ' · Action<span class="grow"></span><button class="x" type="button" data-v="close" title="Close">' + ic('x') + '</button></div><div class="cpb"><div class="v-now">' + nowAt(d) + '</div><div class="v-acts">' + viewerActs(d) + '</div></div></div>' +
-      '<div class="cpanel"><div class="cph">' + ic('file') + 'Details</div><div class="cpb">' + props + '</div></div></div>';
+    var hide = store.get('rms.dside') === '0';
+    var side = '<div class="cside"><div class="cpanel cact"><div class="cph">' + ic('hand') + 'No. ' + r.no + ' · Action<span class="grow"></span>' +
+      '<button class="tgl" type="button" data-v="side" title="' + (hide ? 'Show the details again' : 'Hide the details to give the scan more room') + '">' + (hide ? ic('down') + 'Show details' : '<span style="display:inline-flex;transform:rotate(180deg)">' + ic('down') + '</span>Hide details') + '</button>' +
+      '<button class="x" type="button" data-v="close" title="Close">' + ic('x') + '</button></div><div class="cpb"><div class="v-now">' + nowAt(d) + '</div><div class="v-acts">' + viewerActs(d) + '</div></div></div>' +
+      '<div class="cpanel cdet"><div class="cph">' + ic('file') + 'Details</div><div class="cpb">' + props + '</div></div></div>';
     var tabs = '<div class="v-tabs">' + VTABS.filter(function (t) { return t[0] !== 'info'; }).map(function (t) { return '<button type="button" class="v-tab ' + (v.tab === t[0] ? 'on' : '') + '" data-v="tab" data-tab="' + t[0] + '">' + ic(t[1]) + t[2] + (t[0] === 'scan' && r.fileId ? ' <span class="pill p-green">1</span>' : '') + '</button>'; }).join('') + '<i class="v-ink"></i></div>';
     var oldBody = keepBody ? $('.v-body', box) : null, scroll = oldBody ? oldBody.scrollTop : 0;
     if (oldBody && v.tab === 'scan' && $('.cview', box)) {
       $('.cside', box).outerHTML = side;
       $('.cmainp .v-tabs', box).outerHTML = tabs;
+      $('.cview', box).classList.toggle('noside', hide);
     } else {
-      box.innerHTML = '<div class="cview">' + side + '<div class="cmainp">' + tabs + '<div class="v-body"></div></div></div>';
+      box.innerHTML = '<div class="cview' + (hide ? ' noside' : '') + '">' + side + '<div class="cmainp">' + tabs + '<div class="v-body"></div></div></div>';
       tabBody();
       if (oldBody) $('.v-body', box).scrollTop = scroll;
     }
@@ -2047,7 +2243,7 @@ html.classic .lg-foot{clear:both;padding-top:10px;text-align:left;font-size:11px
         { icon: 'clock', n: days, label: days === 1 ? 'Day in the system' : 'Days in the system' },
         { icon: 'building', tile: 'or', n: Object.keys(d.mov.reduce(function (a, m) { a[m.to] = 1; return a; }, {})).length, label: 'Offices it reached' },
         { icon: 'route', tile: 'grey', n: d.mov.filter(function (m) { return m.from; }).length, label: 'Times routed' }]) + '</div>' +
-        '<dl class="dl">' + f('Subject', esc(r.subject), true) + f('Category', esc(catName(r.cat))) + f('Type', esc(r.type)) + f('From', esc(r.fromP)) + f('To', esc(r.toP)) +
+        '<dl class="dl">' + f('Subject', esc(r.subject), true) + f('Category', esc(catName(r.cat))) + f('Type', esc(r.type)) + f('From (office)', esc(r.fromO !== undefined ? r.fromO : r.fromP)) + f('From (person)', esc(r.fromN)) + f('To', esc(r.toP)) +
         f('Ref. no.', esc(r.ref)) + f('Document date', esc(fmtD(r.docDate))) + f('Priority', esc(r.prio)) + f('Action required', esc(r.action)) + f('Due date', esc(fmtD(r.due))) +
         f('Pages', esc(r.pages)) + f('Logged by', esc(r.createdBy) + ' · ' + esc(r.origin)) + f('Logged on', esc(fmtDT(r.createdAt))) + f('Last update', esc(fmtDT(r.updatedAt))) +
         f('Remarks', esc(r.remarks), true) + '</dl>' +
@@ -2184,6 +2380,7 @@ html.classic .lg-foot{clear:both;padding-top:10px;text-align:left;font-size:11px
       var t = e.target.closest('[data-v]'); if (!t) return;
       var k = t.getAttribute('data-v');
       if (k === 'close') closeViewer();
+      if (k === 'side') { store.set('rms.dside', store.get('rms.dside') === '0' ? '1' : '0'); renderViewerClassic(true); fitSlip(); moveInk(); }
       if (k === 'tab') setTab(t.getAttribute('data-tab'));
       if (k === 'edit' && S.view && S.view.data) editDlg(S.view.data);
       if (k === 'print') printSlip();
@@ -2242,7 +2439,7 @@ html.classic .lg-foot{clear:both;padding-top:10px;text-align:left;font-size:11px
       '<td style="width:28mm;text-align:right;vertical-align:middle"><div style="width:26mm;height:26mm;margin-left:auto">' + qrImg + '</div></td></tr></table>' +
       '<div style="border-top:2.5pt solid #0D47A1;margin:3mm 0 0"></div><div style="border-top:1pt solid #F26522;margin:1mm 0 4mm"></div>' +
       '<table style="width:100%;border-collapse:collapse;margin-bottom:3mm"><tr><td><div style="font-size:18pt;font-weight:bold;letter-spacing:1.5px">ROUTING SLIP</div><div style="font-size:9pt;color:#444">' + esc(catName(r.cat)) + (r.type ? ' · ' + esc(r.type) : '') + (r.prio !== 'Normal' ? ' · <b style="color:#c00">' + esc(r.prio.toUpperCase()) + '</b>' : '') + '</div></td>' +
-      '<td style="text-align:right"><div style="font-size:8pt;color:#555;letter-spacing:1px">TRACKING NO.</div><div style="font-size:30pt;font-weight:bold;color:#0D47A1;line-height:1">' + r.no + '</div></td></tr></table>' +
+      '<td style="text-align:right"><div style="font-size:8pt;color:#555;letter-spacing:1px">FILE NO.</div><div style="font-size:30pt;font-weight:bold;color:#0D47A1;line-height:1">' + r.no + '</div></td></tr></table>' +
       '<table style="width:100%;border-collapse:collapse;margin-bottom:4mm">' +
       '<tr><td style="' + lab + '">Subject</td><td style="' + val + '" colspan="3"><b>' + esc(r.subject) + '</b></td></tr>' +
       '<tr><td style="' + lab + '">From</td><td style="' + val + '">' + esc(r.fromP) + '</td><td style="' + lab + '">To</td><td style="' + val + '">' + esc(r.toP) + '</td></tr>' +
@@ -2450,11 +2647,11 @@ html.classic .lg-foot{clear:both;padding-top:10px;text-align:left;font-size:11px
   function drawSearch() {
     var res = S.search.res, box = $('#sRes'); if (!box) return;
     if (isClassic()) {
-      box.innerHTML = '<table class="grid"><thead><tr><th>#</th><th>No.</th><th>Category</th><th>Subject</th><th>From</th><th>Logged by</th><th>Logged on</th><th>Now at</th><th>Status</th></tr></thead><tbody>' +
+      box.innerHTML = '<table class="grid"><thead><tr><th class="mh">#</th><th>No.</th><th class="mh">Category</th><th>Subject</th><th class="mh">From</th><th class="mh">Logged by</th><th class="mh">Logged on</th><th>Now at</th><th>Status</th></tr></thead><tbody>' +
         (res.rows.length ? res.rows.map(function (r, i) {
           var now = r.at.map(function (a) { return '<b>' + esc(a.o) + '</b> (' + (a.p ? 'Inbox' : 'on hand') + ')'; }).join(', ');
           var st = r.state === 'ACTIVE' ? '<span class="pill p-blue">Moving</span>' : (r.state === 'DONE' ? '<span class="pill p-green">Completed</span>' : '<span class="pill p-grey">Not with any office</span>');
-          return '<tr class="trow ' + (S.view && S.view.no === r.no ? 'viewing' : '') + '" data-no="' + r.no + '"><td class="rn">' + (i + 1) + '</td><td class="nb">' + r.no + '</td><td class="nw">' + esc(catName(r.cat)) + '</td><td class="sj">' + (r.prio && r.prio !== 'Normal' ? '<b class="pr pr-' + esc(r.prio) + '">[' + esc(r.prio) + ']</b> ' : '') + esc(r.subject) + (r.type ? ' <span class="ty">· ' + esc(r.type) + '</span>' : '') + (r.fileId ? ' ' + ic('clip', 'cl') : '') + '</td><td>' + esc(r.fromP) + '</td><td class="nw">' + esc(r.origin) + '</td><td class="nw">' + esc(fmtT(r.createdAt)) + '</td><td>' + (now || '—') + '</td><td class="nw">' + st + '</td></tr>';
+          return '<tr class="trow ' + (S.view && S.view.no === r.no ? 'viewing' : '') + '" data-no="' + r.no + '"><td class="rn mh">' + (i + 1) + '</td><td class="nb">' + r.no + '</td><td class="nw mh">' + esc(catName(r.cat)) + '</td><td class="sj">' + (r.prio && r.prio !== 'Normal' ? '<b class="pr pr-' + esc(r.prio) + '">[' + esc(r.prio) + ']</b> ' : '') + esc(r.subject) + (r.type ? ' <span class="ty">· ' + esc(r.type) + '</span>' : '') + (r.fileId ? ' ' + ic('clip', 'cl') : '') + '</td><td class="mh">' + esc(r.fromP) + '</td><td class="nw mh">' + esc(r.origin) + '</td><td class="nw mh">' + esc(fmtT(r.createdAt)) + '</td><td>' + (now || '—') + '</td><td class="nw">' + st + '</td></tr>';
         }).join('') : '<tr><td class="none" colspan="9">No records found. Try fewer words, or another filter.</td></tr>') + '</tbody></table>';
       $('tbody', box).addEventListener('click', function (e) { var tr = e.target.closest('tr[data-no]'); if (tr) { $$('tr.viewing', box).forEach(function (x) { x.classList.remove('viewing'); }); tr.classList.add('viewing'); openRecord(Number(tr.getAttribute('data-no'))); } });
       var sb = $('#statusbar .sb-fill'); if (sb) sb.insertAdjacentHTML('beforebegin', '<span class="sb">Found: ' + res.matched + ' of ' + res.total + '</span>');
