@@ -872,6 +872,38 @@ html.classic .cview.noside .cmainp{flex:1;min-height:0}
   html.classic .cview.noside .cmainp{min-height:calc(100vh - 140px);min-height:calc(100dvh - 140px)}
   html.classic .cview.noside .scan iframe{min-height:calc(100vh - 230px);min-height:calc(100dvh - 230px)}
 }
+/* ---- phone: no sideways panning in the viewer, bigger tap targets, collapsible Details bar */
+html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
+@media (max-width:900px){
+  html.classic{overflow-x:hidden;overflow-x:clip;max-width:100%}
+  html.classic body{overflow-x:clip}
+  html.classic .viewer,html.classic .v-in,html.classic #vIn{max-width:100vw;overflow-x:hidden}
+  html.classic .cview{overflow-x:hidden;overflow-y:auto;overscroll-behavior-x:none;-webkit-overflow-scrolling:touch}
+  html.classic .cside,html.classic .cmainp,html.classic .cpanel{min-width:0;max-width:100%}
+  html.classic .v-body{overflow-x:hidden}
+  html.classic .scan{max-width:100%;overflow:hidden}
+  /* iPhone Safari widens embedded viewers to fit their content; this keeps the Drive viewer inside the screen */
+  html.classic .scan iframe{width:1px;min-width:100%;max-width:100%}
+  html.classic .slip-box{max-width:100%}
+  /* tap targets 20% taller */
+  html.classic .btn,html.classic .btn.sm,html.classic .chipbtn,html.classic .me{min-height:27px}
+  html.classic .top .btn{min-height:29px}
+  html.classic .nav-i{min-height:30px}
+  html.classic .v-tab{min-height:27px;padding-top:5px;padding-bottom:5px}
+  html.classic .cph .tgl{height:24px}
+  html.classic .cph .x{min-width:27px;min-height:27px}
+  html.classic .cph{min-height:27px}
+  html.classic .ctool input,html.classic .tools input,html.classic .ctool select,html.classic .tools select{min-height:27px}
+  /* Details header: tap to fold away / bring back */
+  html.classic .cdh{cursor:pointer;-webkit-user-select:none;user-select:none;min-height:34px}
+  html.classic .cdh:active{background:linear-gradient(#EAF6FD,#D9F0FC)}
+  html.classic .cdh .cdh-t{display:inline;font-weight:normal;font-size:12px;color:#0050A0}
+  html.classic .cdh .cdh-c{display:inline-flex;margin-right:6px;transition:transform .25s ease}
+  html.classic .cdh .cdh-c.up{transform:rotate(180deg)}
+  html.classic .cview.noside .cdet{display:block}
+  html.classic .cview.noside .cdet .cpb{display:none}
+  html.classic .cview.noside .cdet .cdh{border-bottom:0}
+}
 </style>
 </head>
 <body>
@@ -2206,7 +2238,7 @@ html.classic .cview.noside .cmainp{flex:1;min-height:0}
     var side = '<div class="cside"><div class="cpanel cact"><div class="cph">' + ic('hand') + 'No. ' + r.no + ' · Action<span class="grow"></span>' +
       '<button class="tgl" type="button" data-v="side" title="' + (hide ? 'Show the details again' : 'Hide the details to give the scan more room') + '">' + (hide ? ic('down') + 'Show details' : '<span style="display:inline-flex;transform:rotate(180deg)">' + ic('down') + '</span>Hide details') + '</button>' +
       '<button class="x" type="button" data-v="close" title="Close">' + ic('x') + '</button></div><div class="cpb"><div class="v-now">' + nowAt(d) + '</div><div class="v-acts">' + viewerActs(d) + '</div></div></div>' +
-      '<div class="cpanel cdet"><div class="cph">' + ic('file') + 'Details</div><div class="cpb">' + props + '</div></div></div>';
+      '<div class="cpanel cdet"><div class="cph cdh" data-v="side" role="button" tabindex="0" title="' + (hide ? 'Show the details' : 'Hide the details to make room below') + '">' + ic('file') + 'Details<span class="grow"></span><span class="cdh-t">' + (hide ? 'Show' : 'Hide') + '</span><span class="cdh-c' + (hide ? '' : ' up') + '">' + ic('down') + '</span></div><div class="cpb">' + props + '</div></div></div>';
     var tabs = '<div class="v-tabs">' + VTABS.filter(function (t) { return t[0] !== 'info'; }).map(function (t) { return '<button type="button" class="v-tab ' + (v.tab === t[0] ? 'on' : '') + '" data-v="tab" data-tab="' + t[0] + '">' + ic(t[1]) + t[2] + (t[0] === 'scan' && r.fileId ? ' <span class="pill p-green">1</span>' : '') + '</button>'; }).join('') + '<i class="v-ink"></i></div>';
     var oldBody = keepBody ? $('.v-body', box) : null, scroll = oldBody ? oldBody.scrollTop : 0;
     if (oldBody && v.tab === 'scan' && $('.cview', box)) {
