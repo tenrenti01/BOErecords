@@ -470,7 +470,7 @@ em{font-style:normal}
   :root{--side:0px}
   .login{grid-template-columns:1fr;overflow:auto;position:fixed}
   .lg-hero{padding:30px 24px}.lg-pts{display:none}.lg-sub{margin-bottom:6px}
-  .top{gap:8px;padding:0 10px}.brand{width:auto}.bt small,.where,.mt,.sync .st,#btnNew .bl,.me>.ic{display:none}
+  .top{gap:8px;padding:0 10px}.brand{width:auto}.bt small,.where,.mt,.sync .st,#btnNew .bl,#btnCont .bl,.me>.ic{display:none}
   .bt b{font-size:18px}.sync{padding:0 10px}#btnNew{padding:0 12px}.me{padding:0 2px}
   .v-head{padding:14px 14px 10px}.v-no{width:70px}.v-no b{font-size:30px}.v-now,.v-acts{margin-left:14px;margin-right:14px;padding-left:0}.v-acts{padding:0 0 12px}.v-body{padding:14px}
   .shell{flex-direction:column}
@@ -672,10 +672,10 @@ html.classic .rt-card.ret{background:#FDE7E9;border-color:#E3A0A0;box-shadow:non
 html.classic .rt-b b{font-size:12px}
 html.classic .rt-b small,html.classic .rt-st{font-size:11px;color:#444}
 html.classic .rt-b q{font-size:11.5px;color:#000}
-html.classic .tl{padding-left:24px}
-html.classic .tl::before{left:8px;width:1px;background:#A0A0A0}
+html.classic .tl{padding-left:40px}
+html.classic .tl::before{left:19px;width:1px;background:#A0A0A0}
 html.classic .tl li{padding-bottom:10px}
-html.classic .tl .dot{left:-24px;width:18px;height:18px;border-radius:0}
+html.classic .tl .dot{left:-30px;width:18px;height:18px;border-radius:0}
 html.classic .tl .dot .ic{width:11px;height:11px}
 html.classic .tl b{font-size:12px}
 html.classic .tl small,html.classic .tl p{font-size:11.5px}
@@ -872,6 +872,29 @@ html.classic .cview.noside .cmainp{flex:1;min-height:0}
   html.classic .cview.noside .cmainp{min-height:calc(100vh - 140px);min-height:calc(100dvh - 140px)}
   html.classic .cview.noside .scan iframe{min-height:calc(100vh - 230px);min-height:calc(100dvh - 230px)}
 }
+/* ---- working time between two steps, in a circle on the History line */
+.tl li.tl-gap{padding:0 0 10px;height:34px}
+.tl-gap .wt{position:absolute;left:-38px;top:-3px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#fff;border:1.5px solid #0D47A1;color:#0D47A1;font:bold 10px/1 Tahoma,Verdana,sans-serif;letter-spacing:-.2px;box-shadow:0 1px 3px rgba(0,0,0,.18);cursor:default;white-space:nowrap}
+/* ---- end of the flow (File / Close) and Continue record */
+html.classic .cend .cpb{padding:6px 8px}
+html.classic .end-t{margin:0 0 6px;font-size:12px;color:#000;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+html.classic .end-b{display:flex;gap:6px;flex-wrap:wrap}
+html.classic .end-b .btn{min-width:84px;justify-content:center}
+html.classic .end-h{margin:6px 0 0;font-size:11px;color:#555;line-height:1.45}
+html.classic .cview.noside .cend .cpb{display:flex;align-items:center;gap:4px 10px;flex-wrap:wrap}
+html.classic .cview.noside .cend .end-h{display:none}
+html.classic .cview.noside .cend .end-t{margin:0}
+.cont-find{align-items:end}
+.cont-find .btn{width:100%;justify-content:center}
+.cont-card{display:none}
+.cont-card.on{display:block;margin:2px 0 10px;border:1px solid #A0A0A0;background:#FAFAFA;padding:8px 10px}
+.cont-r b{display:block;font-size:13px}
+.cont-r small{display:block;color:#555;font-size:11.5px;margin-top:2px}
+.cont-now{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin-top:6px;font-size:12px}
+.cont-w{margin-top:6px;padding:5px 8px;background:#FFF4CE;border:1px solid #E5C76B;font-size:12px;color:#000}
+.cont-w.bad{background:#FDE7E9;border-color:#E3A0A0}
+.f.acts .mchk{margin-top:2px}
+
 /* ---- phone: no sideways panning in the viewer, bigger tap targets, collapsible Details bar */
 html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
 @media (max-width:900px){
@@ -958,6 +981,7 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
       <div class="sync" id="sync"><i></i><span class="st">Live</span></div>
       <button class="btn btn-ghost sm" id="btnInstall" type="button" hidden title="Install BOE Records as an app on this computer or phone"><span data-ic="download"></span><span class="tl-l">Install app</span></button>
       <button class="btn btn-o" id="btnNew" type="button" hidden><span data-ic="plus"></span><span class="bl">New record</span></button>
+      <button class="btn btn-ghost" id="btnCont" type="button" hidden title="A record that left BOE and came back: continue it under the same number"><span data-ic="reopen"></span><span class="bl">Continue record</span></button>
       <button class="btn btn-ghost sm c-only" id="btnRefresh" type="button"><span data-ic="refresh"></span>Refresh</button>
       <button class="me" id="meBtn" type="button"><span class="av" id="meAv"></span><span class="mt"><b id="meName"></b><small id="meOffice"></small></span><span data-ic="down"></span></button>
       <button class="btn btn-ghost sm c-only" id="btnOut" type="button"><span data-ic="logout"></span>Sign out</button>
@@ -1117,9 +1141,16 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
     if (m.status === 'RECALLED') return { k: 'rec', label: 'Recalled', cls: 'p-grey' };
     if (m.hold === 'HELD') return { k: 'held', label: 'On hand', cls: 'p-blue', live: true };
     if (m.hold === 'FORWARDED') return { k: 'fwd', label: 'Forwarded', cls: 'p-grey' };
-    if (m.hold === 'DONE') return { k: 'done', label: 'Done', cls: 'p-green' };
+    if (m.hold === 'DONE') return { k: 'done', label: m.endAs || 'Done', cls: m.endAs === 'Closed' ? 'p-grey' : 'p-green' };
     return { k: '', label: m.status || '—', cls: 'p-grey' };
   }
+  function endWord(m) { return m.endAs || 'Done'; }
+  /** The latest instruction given when it was sent (older records kept it on the record itself). */
+  function lastActs(d) {
+    var s = d.mov.filter(function (m) { return m.from && m.purpose; }).sort(function (a, b) { return b.sentAt - a.sentAt; })[0];
+    return s ? s.purpose : (d.rec.action || '');
+  }
+  function fromWord(m) { return m.purpose === 'Continued' ? 'Came back from outside BOE' : 'Logged here'; }
   function pill(st) { return '<span class="pill ' + st.cls + (st.live ? ' live' : '') + '"><i></i>' + esc(st.label) + '</span>'; }
 
   // ================================================================ SERVER CALLS (with automatic retry)
@@ -1358,6 +1389,7 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
     $('#meAv').textContent = me.office.slice(0, 5); $('#meAv').style.fontSize = me.office.length > 4 ? '10.5px' : (me.office.length > 3 ? '12px' : '');
     $('#meName').textContent = me.name;
     $('#meOffice').textContent = me.office + (me.role === 'Admin' ? ' · System admin' : '');
+    $('#btnCont').hidden = !(S.board.canLog || S.board.seeAll);
     var nb = $('#btnNew'); nb.hidden = !S.board.canLog; nb.title = S.board.next ? 'Next tracking number: ' + S.board.next : '';
     syncChip();
   }
@@ -1550,11 +1582,11 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
   function rowHTML(m, p, i, cls) {
     var r = rec(m.no), due = dueInfo(r), pend = S.pending[m.id];
     var who = '', when = m.sentAt, extra = '', acts = '', st = '';
-    var purpose = m.purpose && m.purpose !== 'Logged' ? esc(m.purpose) : '';
+    var purpose = m.purpose && m.purpose !== 'Logged' ? esc(m.purpose === 'Continued' ? m.note : m.purpose) : '';
     if (p === 'inbox') { who = 'From <b>' + esc(m.from) + '</b> · ' + esc(m.sentBy); extra = purpose + (m.note ? ' · <q>' + esc(m.note) + '</q>' : ''); }
-    if (p === 'onhand') { who = m.from ? (m.status === 'DELIVERED' ? 'Delivered from ' : 'Accepted from ') + '<b>' + esc(m.from) + '</b>' : '<b>Logged here</b>'; when = m.holdAt || m.respAt; extra = purpose + (m.holdNote ? ' · ' + esc(m.holdNote) : ''); }
+    if (p === 'onhand') { who = m.from ? (m.status === 'DELIVERED' ? 'Delivered from ' : 'Accepted from ') + '<b>' + esc(m.from) + '</b>' : '<b>' + fromWord(m) + '</b>'; when = m.holdAt || m.respAt; extra = purpose + (m.holdNote ? ' · ' + esc(m.holdNote) : ''); }
     if (p === 'sent') { who = 'To <b>' + esc(m.to) + '</b> · ' + esc(off(m.to).name); extra = purpose + (m.respNote ? ' · <q>' + esc(m.respNote) + '</q>' : ''); st = pill(stateOf(m)); }
-    if (p === 'done') { who = m.from ? 'From <b>' + esc(m.from) + '</b>' : '<b>Logged here</b>'; when = m.holdAt; extra = m.holdNote ? '<q>' + esc(m.holdNote) + '</q>' : ''; }
+    if (p === 'done') { who = m.from ? 'From <b>' + esc(m.from) + '</b>' : '<b>' + fromWord(m) + '</b>'; when = m.holdAt; extra = '<b>' + esc(endWord(m)) + '</b>' + (m.holdNote ? ' · <q>' + esc(m.holdNote) + '</q>' : ''); }
     if (p === 'units') { who = 'At <b>' + esc(m.to) + '</b> · ' + esc(off(m.to).name); when = m.status === 'PENDING' ? m.sentAt : (m.holdAt || m.respAt); extra = (m.from ? 'From ' + esc(m.from) + ' · ' : '') + purpose; st = pill(stateOf(m)); }
     acts = actsFor(m, p, st);
     var meta = '<span class="chip c-' + esc(r.cat) + '">' + ic(CAT[r.cat] ? CAT[r.cat].icon : 'file') + esc(catName(r.cat)) + '</span>' +
@@ -1575,7 +1607,7 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
     var pend = S.pending[m.id];
     if (pend) return '<span class="pendtag"><i></i>' + esc(pend) + '…</span>';
     if (p === 'inbox') return '<button type="button" class="btn btn-ok sm" data-a="accept">' + ic('check') + 'Accept</button><button type="button" class="btn btn-ghost sm" data-a="return">' + ic('ret') + 'Return</button>';
-    if (p === 'onhand') return '<button type="button" class="btn btn-n sm" data-a="forward">' + ic('fwd') + 'Forward</button><button type="button" class="btn btn-ghost sm" data-a="done">' + ic('check') + 'Done</button>';
+    if (p === 'onhand') return '<button type="button" class="btn btn-n sm" data-a="forward">' + ic('fwd') + 'Forward</button><button type="button" class="btn btn-ghost sm" data-a="file">' + ic('archive') + 'File</button><button type="button" class="btn btn-ghost sm" data-a="close">' + ic('check') + 'Close</button>';
     if (p === 'sent') return (st || '') + (m.status === 'PENDING' || (m.status === 'DELIVERED' && m.hold === 'HELD') ? '<button type="button" class="btn btn-ghost sm" data-a="recall" title="Take it back">' + ic('undo') + 'Recall</button>' : '');
     if (p === 'done') return '<button type="button" class="btn btn-ghost sm" data-a="reopen">' + ic('reopen') + 'Reopen</button>';
     return st || '';
@@ -1596,17 +1628,17 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
     if (k === 'no') return '<td class="nb">' + m.no + '</td>';
     if (k === 'cat') return '<td class="nw">' + esc(catName(r.cat)) + '</td>';
     if (k === 'subj') return '<td class="sj">' + (r.prio && r.prio !== 'Normal' ? '<b class="pr pr-' + esc(r.prio) + '">[' + esc(r.prio) + ']</b> ' : '') + esc(r.subject) + (r.type ? ' <span class="ty">· ' + esc(r.type) + '</span>' : '') + (r.fileId ? ' ' + ic('clip', 'cl') : '') + '</td>';
-    if (k === 'from') return '<td class="nw">' + (m.from ? '<b>' + esc(m.from) + '</b>' + (p === 'inbox' && m.sentBy ? ' · ' + esc(m.sentBy) : '') : 'Logged here') + '</td>';
+    if (k === 'from') return '<td class="nw">' + (m.from ? '<b>' + esc(m.from) + '</b>' + (p === 'inbox' && m.sentBy ? ' · ' + esc(m.sentBy) : '') : fromWord(m)) + '</td>';
     if (k === 'to') return '<td class="nw" title="' + esc(off(m.to).name) + '"><b>' + esc(m.to) + '</b></td>';
     if (k === 'at') return '<td class="nw" title="' + esc(off(m.to).name) + '"><b>' + esc(m.to) + '</b></td>';
-    if (k === 'purp') return '<td>' + esc(m.purpose === 'Logged' ? '' : m.purpose) + (m.note ? ' · <i>“' + esc(m.note) + '”</i>' : '') + '</td>';
+    if (k === 'purp') return '<td>' + (m.purpose === 'Continued' ? esc(m.note) : esc(m.purpose === 'Logged' ? '' : m.purpose) + (m.note ? ' · <i>“' + esc(m.note) + '”</i>' : '')) + '</td>';
     if (k === 'sent') return '<td class="nw">' + esc(fmtT(m.sentAt)) + '</td>';
     t = m.status === 'PENDING' ? m.sentAt : (m.holdAt || m.respAt);
     if (k === 'since') return '<td class="nw">' + esc(fmtT(t)) + '</td>';
     if (k === 'wait') return '<td class="nw">' + esc(span(t)) + '</td>';
     if (k === 'due') return '<td class="nw ' + (due ? due.cls : '') + '">' + esc(r.due ? fmtD(r.due) : '') + (due && due.cls === 'late' ? ' (overdue)' : '') + '</td>';
     if (k === 'st') return '<td class="nw">' + pill(stateOf(m)) + '</td>';
-    if (k === 'note') return '<td>' + esc(m.respNote || m.holdNote || '') + '</td>';
+    if (k === 'note') return '<td>' + (m.hold === 'DONE' ? '<b>' + esc(endWord(m)) + '</b>' + (m.holdNote ? ' · ' : '') : '') + esc(m.respNote || m.holdNote || '') + '</td>';
     if (k === 'doneat') return '<td class="nw">' + esc(fmtT(m.holdAt)) + '</td>';
     if (k === 'act') return '<td class="ac">' + actsFor(m, p, '') + '</td>';
     return '<td></td>';
@@ -1701,7 +1733,8 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
     if (a === 'accept') return acceptMany([m]);
     if (a === 'return') return returnDlg(m);
     if (a === 'forward') return forwardDlg(m);
-    if (a === 'done') return doneDlg(m);
+    if (a === 'file' || a === 'done') return doneDlg(m, 'FILED');
+    if (a === 'close') return doneDlg(m, 'CLOSED');
     if (a === 'recall') return recallMv(m);
     if (a === 'reopen') return reopenMv(m);
   }
@@ -1733,15 +1766,20 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
       }
     });
   }
-  function doneDlg(m) {
-    var notes = ['Filed', 'Complied', 'Noted', 'Signed and released', 'Acted upon'];
+  /** Ends the flow in this office. File = kept in the filing cabinet. Close = no further action needed. */
+  function doneDlg(m, how) {
+    var file = how !== 'CLOSED';
+    var notes = file ? ['Records cabinet', 'Division file', '201 file', 'Contracts folder'] : ['No further action needed', 'Noted', 'Complied', 'Signed and released', 'Acted upon'];
     dialog({
-      title: 'Mark No. ' + m.no + ' done', sub: 'It moves to your Done list. You can reopen it later.', icon: 'check', tile: 'green', ok: 'Mark done', okCls: 'btn-ok', okIcon: 'check',
-      body: '<label class="f"><span>Note (optional)</span><textarea name="note" rows="2" placeholder="What was done?"></textarea></label>' +
+      title: (file ? 'File No. ' : 'Close No. ') + m.no,
+      sub: file ? 'The document reached its end and is kept in the filing cabinet.' : 'The document reached its end. No further action is needed.',
+      icon: file ? 'archive' : 'check', tile: file ? 'navy' : 'green', ok: file ? 'File it' : 'Close it', okCls: file ? 'btn-n' : 'btn-ok', okIcon: file ? 'archive' : 'check',
+      body: '<div class="hint">' + ic('info') + '<div><b>' + esc(rec(m.no).subject) + '</b><br>It moves to your <b>Done</b> list as <b>' + (file ? 'Filed' : 'Closed') + '</b>. You can reopen it later.</div></div>' +
+        '<label class="f"><span>' + (file ? 'Where it is filed (optional)' : 'Remarks (optional)') + '</span><textarea name="note" rows="2" placeholder="' + (file ? 'Cabinet, drawer or folder' : 'Why it ends here') + '"></textarea></label>' +
         '<div class="qr-chips">' + notes.map(function (x) { return '<button type="button" class="chipbtn" data-fill="note">' + esc(x) + '</button>'; }).join('') + '</div>',
       onOk: function (b) {
-        var op = { opId: opid(), type: 'DONE', id: m.id, note: $('[name=note]', b).value.trim() };
-        schedule({ verb: 'Finishing', label: 'Marking No. ' + m.no + ' done', icon: 'check', tile: 'green', ids: [m.id], run: function () { return act(op); }, ok: 'No. ' + m.no + ' is done.', fail: 'Not marked done' });
+        var op = { opId: opid(), type: 'DONE', how: file ? 'FILED' : 'CLOSED', id: m.id, note: $('[name=note]', b).value.trim() };
+        schedule({ verb: file ? 'Filing' : 'Closing', label: (file ? 'Filing No. ' : 'Closing No. ') + m.no, icon: file ? 'archive' : 'check', tile: file ? 'navy' : 'green', ids: [m.id], run: function () { return act(op); }, ok: 'No. ' + m.no + (file ? ' is filed.' : ' is closed.'), fail: file ? 'Not filed' : 'Not closed' });
       }
     });
   }
@@ -1767,14 +1805,16 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
     var body = el('<div></div>');
     body.innerHTML = '<div class="hint ' + (direct ? 'or' : '') + '">' + ic(direct ? 'send' : 'info') + '<div>' + (direct ? '<b>Outgoing document.</b> It is delivered straight to each office\'s <b>On hand</b>, with no Accept step.' : 'Each office gets a copy in its <b>Inbox</b> and must <b>Accept</b> or <b>Return</b> it.') + '</div></div>';
     body.appendChild(pk);
-    body.appendChild(el('<div class="grid2"><label class="f"><span>Purpose</span><select name="purpose">' + S.boot.lists.purposes.map(function (x) { return '<option>' + esc(x) + '</option>'; }).join('') + '</select></label><label class="f"><span>Note to the receiving office</span><input name="note" placeholder="Optional instructions"></label></div>'));
+    var ab = actsBox(); body.appendChild(ab);
+    body.appendChild(el('<label class="f"><span>Note to the receiving office</span><input name="note" placeholder="Optional instructions"></label>'));
     body.appendChild(el('<label class="opt"><input type="checkbox" name="keep"> Keep a copy on hand in ' + esc(S.me.office) + '</label>'));
     dialog({
       title: 'Forward No. ' + m.no, sub: esc(r.subject), icon: 'fwd', tile: 'navy', ok: 'Forward', okCls: 'btn-n', okIcon: 'send', wide: true, body: body,
       onOk: function (b, err) {
         var to = pk.value();
         if (!to.length) { err('Pick at least one office.'); return false; }
-        var op = { opId: opid(), type: 'SEND', id: m.id, to: to, purpose: $('[name=purpose]', b).value, note: $('[name=note]', b).value.trim(), keepCopy: $('[name=keep]', b).checked };
+        if (!ab.value().length) { err('Tick at least one action required.'); ab.scrollIntoView({ block: 'nearest' }); return false; }
+        var op = { opId: opid(), type: 'SEND', id: m.id, to: to, purpose: ab.value().join('; '), note: $('[name=note]', b).value.trim(), keepCopy: $('[name=keep]', b).checked };
         schedule({
           verb: 'Forwarding', label: 'Forwarding No. ' + m.no + ' to ' + to.join(', '), icon: 'send', tile: 'navy', ids: [m.id],
           run: function () { return act(op); },
@@ -1828,12 +1868,21 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
   }
 
   // ---------- new / edit record
+  /** "Action required" tick list, asked when the document is sent (that is where the instruction is given). */
+  function actsBox(selected) {
+    var sel = selected || [];
+    var box = el('<div class="f acts"><span>Action required <small>(tick all that apply)</small></span><div class="mchk">' + S.boot.lists.purposes.map(function (x) {
+      var on = sel.indexOf(x) >= 0;
+      return '<label class="' + (on ? 'on' : '') + '"><input type="checkbox" data-act value="' + esc(x) + '" ' + (on ? 'checked' : '') + '><span>' + esc(x) + '</span></label>';
+    }).join('') + '</div></div>');
+    box.addEventListener('change', function (e) { if (e.target.hasAttribute('data-act')) e.target.closest('label').classList.toggle('on', e.target.checked); });
+    box.value = function () { return $$('[data-act]', box).filter(function (i) { return i.checked; }).map(function (i) { return i.value; }); };
+    return box;
+  }
   function recFormHTML(r, fileNo) {
     r = r || {};
     var L = S.boot.lists, cat = r.cat || 'INCOMING', prio = r.prio || 'Normal';
     var opt = function (list, v) { return list.map(function (x) { return '<option ' + (x === v ? 'selected' : '') + '>' + esc(x) + '</option>'; }).join(''); };
-    var acts = String(r.action || '').split(';').map(function (x) { return x.trim(); }).filter(Boolean);
-    var actList = L.purposes.concat(acts.filter(function (a) { return L.purposes.indexOf(a) < 0; }));
     var isNew = fileNo !== undefined;
     return '<div class="seg3">' + Object.keys(L.cats).map(function (k) {
       return '<label class="segc ' + (k === cat ? 'on' : '') + '"><input type="radio" name="Category" value="' + k + '" ' + (k === cat ? 'checked' : '') + '><span class="sg-ic">' + ic(CAT[k].icon) + '</span><b>' + esc(L.cats[k]) + '</b><small>' + esc(CAT[k].hint) + '</small></label>';
@@ -1848,10 +1897,6 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
       '<div class="grid2"><label class="f"><span>From (office)</span><input name="FromOffice" autocomplete="off" value="' + esc((r.fromO !== undefined ? r.fromO : r.fromP) || '') + '" placeholder="Office or agency that sent it"></label>' +
       '<label class="f"><span>From (person)</span><input name="FromPerson" autocomplete="off" value="' + esc(r.fromN || '') + '" placeholder="Name and position of the sender"></label></div>' +
       '<label class="f"><span>To</span><input name="ToParty" autocomplete="off" value="' + esc(r.toP || '') + '" placeholder="Addressee"></label>' +
-      '<div class="f"><span>Action required <small>(tick all that apply)</small></span><div class="mchk">' + actList.map(function (x) {
-        var on = acts.indexOf(x) >= 0;
-        return '<label class="' + (on ? 'on' : '') + '"><input type="checkbox" data-act value="' + esc(x) + '" ' + (on ? 'checked' : '') + '><span>' + esc(x) + '</span></label>';
-      }).join('') + '</div></div>' +
       '<div class="grid2"><label class="f"><span>Due date</span><input type="date" name="DueDate" value="' + esc(r.due || '') + '"></label>' +
       '<label class="f"><span>Pages</span><input type="number" inputmode="numeric" min="0" name="Pages" value="' + esc(r.pages || '') + '"></label></div>' +
       '<label class="f"><span>Remarks</span><textarea name="Remarks" rows="2">' + esc(r.remarks || '') + '</textarea></label>';
@@ -1859,10 +1904,9 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
   /** Values of the log form, ready for the server. */
   function recFields(root) {
     var v = formVals(root);
-    var acts = $$('[data-act]', root).filter(function (i) { return i.checked; }).map(function (i) { return i.value; });
     var both = [String(v.FromOffice || '').trim(), String(v.FromPerson || '').trim()].filter(Boolean).join(' · ');
     return { Category: v.Category, DocType: v.DocType, Subject: v.Subject, FromOffice: v.FromOffice, FromPerson: v.FromPerson, FromParty: both, ToParty: v.ToParty, RefNo: v.RefNo,
-      DocDate: v.DocDate, Priority: v.Priority, ActionRequired: acts.join('; '), DueDate: v.DueDate, Pages: v.Pages, Remarks: v.Remarks };
+      DocDate: v.DocDate, Priority: v.Priority, DueDate: v.DueDate, Pages: v.Pages, Remarks: v.Remarks };
   }
   function checkRec(f, err) {
     if (!String(f.Subject || '').trim()) { err('Type the subject.'); return false; }
@@ -1877,7 +1921,6 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
     };
     root.addEventListener('change', function (e) {
       if (e.target.name === 'Category') syncCat();
-      if (e.target.hasAttribute('data-act')) e.target.closest('label').classList.toggle('on', e.target.checked);
     });
     var fno = $('[name=FileNo]', root);
     if (fno) fno.addEventListener('input', function () {
@@ -1996,7 +2039,8 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
     var sendBox = el('<div class="sendbox" hidden></div>');
     var pk = picker({});
     sendBox.appendChild(pk);
-    sendBox.appendChild(el('<div class="grid2"><label class="f"><span>Purpose</span><select name="sPurpose">' + S.boot.lists.purposes.map(function (x) { return '<option>' + esc(x) + '</option>'; }).join('') + '</select></label><label class="f"><span>Note</span><input name="sNote" placeholder="Optional instructions"></label></div>'));
+    var sab = actsBox(); sendBox.appendChild(sab);
+    sendBox.appendChild(el('<label class="f"><span>Note</span><input name="sNote" placeholder="Optional instructions"></label>'));
     body.appendChild(sendBox);
     $('input', sendTog).addEventListener('change', function (e) { sendBox.hidden = !e.target.checked; });
     dialog({
@@ -2015,7 +2059,7 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
           okBtn.disabled = false;
         }
         var send = null;
-        if (v.sendNow) { var to = pk.value(); if (!to.length) { err('Pick at least one office to send it to, or untick "Send it right away".'); return false; } send = { to: to, purpose: v.sPurpose, note: (v.sNote || '').trim() }; }
+        if (v.sendNow) { var to = pk.value(); if (!to.length) { err('Pick at least one office to send it to, or untick "Send it right away".'); return false; } if (!sab.value().length) { err('Tick at least one action required, or untick "Send it right away".'); return false; } send = { to: to, purpose: sab.value().join('; '), note: (v.sNote || '').trim() }; }
         var f = fb.file(), data = null;
         if (f) { okBtn.disabled = true; try { data = await readFile(f); } catch (e2) { okBtn.disabled = false; err(errText(e2)); return false; } okBtn.disabled = false; }
         var ids = { c: opid(), u: opid(), a: opid() };
@@ -2035,6 +2079,72 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
           ok: function (r) { return 'Logged as No. ' + r.no + (r.sent ? ' and ' + (r.sent.direct ? 'delivered' : 'sent') + ' to ' + r.sent.to.join(', ') : '') + '.'; },
           after: function (r) { openRecord(r.no); },
           fail: 'Record not saved'
+        });
+      }
+    });
+  }
+  /** A record that left BOE (signed or acted on outside) came back: continue it under the same file number.
+      Where it went outside is not known; only where it came back from. */
+  function continueDlg(no) {
+    var body = el('<div></div>'), found = null;
+    body.innerHTML = '<div class="hint">' + ic('info') + '<div>Use this when a document <b>left BOE and came back</b>, for example after it was signed outside. It continues under the <b>same file number</b> and starts <b>On hand</b> in ' + esc(S.me.office) + '.</div></div>' +
+      '<div class="grid2 cont-find"><label class="f"><span>File no. *</span><input name="cNo" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="9" value="' + esc(no || '') + '" placeholder="e.g. 103"></label>' +
+      '<div class="f"><span>&nbsp;</span><button type="button" class="btn btn-ghost" data-find>' + ic('search') + 'Find the record</button></div></div>' +
+      '<div class="cont-card" data-card></div>' +
+      '<div class="grid2"><label class="f"><span>Came back from</span><input name="cFrom" autocomplete="off" placeholder="Office or person outside BOE"></label>' +
+      '<label class="f"><span>Note</span><input name="cNote" autocomplete="off" placeholder="e.g. Signed by the Undersecretary"></label></div>';
+    var card = $('[data-card]', body), noIn = $('[name=cNo]', body);
+    var show = function (d) {
+      var r = d.rec, live = d.mov.filter(function (m) { return m.status === 'PENDING' || m.hold === 'HELD'; });
+      var mine = live.filter(function (m) { return m.to === S.me.office; })[0];
+      card.innerHTML = '<div class="cont-r"><b>No. ' + r.no + ' · ' + esc(r.subject) + '</b><small>' + esc(catName(r.cat)) + (r.type ? ' · ' + esc(r.type) : '') + (r.fromP ? ' · from ' + esc(r.fromP) : '') + '</small>' +
+        '<div class="cont-now">' + nowAt(d) + '</div>' +
+        (mine ? '<div class="cont-w bad">It is already ' + (mine.status === 'PENDING' ? 'in your Inbox' : 'on hand in ' + esc(S.me.office)) + '. Open it from there instead.</div>'
+          : live.length ? '<div class="cont-w">BOE still shows it with ' + live.map(function (m) { return esc(m.to); }).join(', ') + '. Continuing gives ' + esc(S.me.office) + ' its own copy; those stay as they are.</div>' : '') + '</div>';
+      card.className = 'cont-card on';
+    };
+    var find = async function () {
+      var n = noIn.value.replace(/[^0-9]/g, '');
+      noIn.value = n; found = null;
+      if (!n) { card.className = 'cont-card'; card.innerHTML = ''; return null; }
+      card.className = 'cont-card on'; card.innerHTML = '<div class="cont-r"><small>Looking for No. ' + n + '…</small></div>';
+      try { var d = await call('apiRecord', [S.token, Number(n)], 3); found = d; show(d); return d; }
+      catch (e) { card.innerHTML = '<div class="cont-w bad">' + esc(errText(e)) + '</div>'; return null; }
+    };
+    $('[data-find]', body).addEventListener('click', find);
+    noIn.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); find(); } });
+    noIn.addEventListener('input', function () { found = null; card.className = 'cont-card'; card.innerHTML = ''; });
+    var sendTog = el('<label class="opt"><input type="checkbox" name="sendNow"> Forward it right away</label>');
+    var sendBox = el('<div class="sendbox" hidden></div>'), pk = picker({}), sab = actsBox();
+    sendBox.appendChild(pk); sendBox.appendChild(sab);
+    sendBox.appendChild(el('<label class="f"><span>Note to the receiving office</span><input name="sNote" placeholder="Optional instructions"></label>'));
+    body.appendChild(sendTog); body.appendChild(sendBox);
+    $('input', sendTog).addEventListener('change', function (e) { sendBox.hidden = !e.target.checked; });
+    dialog({
+      title: 'Continue record', sub: 'Pick up a document that came back to BOE.', icon: 'reopen', tile: 'or', ok: 'Continue', okCls: 'btn-o', okIcon: 'check', wide: true, body: body,
+      onOpen: function (b) {
+        attachSuggest($('[name=cFrom]', b), function () { var d = suggData(); return d.offices.concat(d.persons.map(function (p) { return p.v; })).map(function (v) { return { v: v }; }); }, 'Earlier senders');
+        loadSugg();
+        if (no) find();
+      },
+      onOk: async function (b, err, okBtn) {
+        if (!noIn.value.trim()) { err('Type the file number of the document that came back.'); noIn.focus(); return false; }
+        if (!found) { okBtn.disabled = true; await find(); okBtn.disabled = false; if (!found) { err('Record not found. Check the file number.'); return false; } }
+        if (found.mov.some(function (m) { return m.to === S.me.office && (m.status === 'PENDING' || m.hold === 'HELD'); })) { err('No. ' + found.rec.no + ' is already with ' + S.me.office + '.'); return false; }
+        var v = formVals(b), send = null;
+        if (v.sendNow) {
+          var to = pk.value();
+          if (!to.length) { err('Pick at least one office, or untick "Forward it right away".'); return false; }
+          if (!sab.value().length) { err('Tick at least one action required.'); return false; }
+          send = { to: to, purpose: sab.value().join('; '), note: (v.sNote || '').trim() };
+        }
+        var n = found.rec.no, op = { opId: opid(), type: 'CONTINUE', no: n, from: (v.cFrom || '').trim(), note: (v.cNote || '').trim(), send: send };
+        schedule({
+          verb: 'Continuing', label: 'Continuing No. ' + n + (send ? ' and sending to ' + send.to.join(', ') : ''), icon: 'reopen', tile: 'or',
+          run: function () { return act(op); },
+          ok: function (r) { return 'No. ' + r.no + ' continues ' + (r.sent ? 'and was ' + (r.sent.direct ? 'delivered' : 'sent') + ' to ' + r.sent.to.join(', ') : 'on hand in ' + S.me.office) + '.'; },
+          after: function (r) { openRecord(r.no); },
+          fail: 'Not continued'
         });
       }
     });
@@ -2170,7 +2280,8 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
   function nowAt(d) {
     var live = d.mov.filter(function (m) { return m.status === 'PENDING' || m.hold === 'HELD'; });
     if (live.length) return '<b style="color:var(--ink2)">Now at</b>' + live.map(function (m) { return '<span class="pill ' + (m.status === 'PENDING' ? 'p-amber' : 'p-blue') + ' live"><i></i>' + esc(m.to) + ' · ' + (m.status === 'PENDING' ? 'Inbox' : 'On hand') + '</span>'; }).join('');
-    if (d.mov.some(function (m) { return m.hold === 'DONE'; })) return '<span class="pill p-green"><i></i>Completed</span><span>Every office that had it is done.</span>';
+    var ends = d.mov.filter(function (m) { return m.hold === 'DONE'; }).sort(function (a, b) { return b.holdAt - a.holdAt; });
+    if (ends.length) return '<span class="pill ' + stateOf(ends[0]).cls + '"><i></i>' + esc(endWord(ends[0])) + ' · ' + esc(ends[0].to) + '</span><span>' + esc(fmtDT(ends[0].holdAt)) + '</span>';
     return '<span class="pill p-grey"><i></i>Not with any office</span>';
   }
   function viewerActs(d) {
@@ -2179,15 +2290,34 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
     var held = d.mov.filter(function (m) { return m.to === me && m.hold === 'HELD'; })[0];
     var done = !held && d.mov.filter(function (m) { return m.to === me && m.hold === 'DONE'; })[0];
     if (pend) h += btnFor(pend, 'accept', 'btn-ok', 'check', 'Accept') + btnFor(pend, 'return', 'btn-ghost', 'ret', 'Return');
-    if (held) h += btnFor(held, 'forward', 'btn-n', 'fwd', 'Forward') + btnFor(held, 'done', 'btn-ghost', 'check', 'Mark done');
-    if (done) h += btnFor(done, 'reopen', 'btn-ghost', 'reopen', 'Reopen');
+    if (held) h += btnFor(held, 'forward', 'btn-n', 'fwd', 'Forward');
     d.mov.forEach(function (m) {
       if (m.from === me && (m.status === 'PENDING' || (m.status === 'DELIVERED' && m.hold === 'HELD' && !d.mov.some(function (k) { return k.parent === m.id; }))))
         h += btnFor(m, 'recall', 'btn-ghost', 'undo', 'Recall from ' + m.to);
     });
+    if (canContinue(d)) h += '<button type="button" class="btn btn-ghost sm" data-v="cont" title="It left BOE and came back: pick it up again under the same number">' + ic('reopen') + 'Continue record</button>';
     if (d.canEdit) h += '<button type="button" class="btn btn-ghost sm" data-v="edit">' + ic('edit') + 'Edit details</button>';
     h += '<button type="button" class="btn btn-ghost sm" data-v="tab" data-tab="slip">' + ic('print') + 'Routing slip</button>';
     return h;
+  }
+  /** File / Close (or, once ended, what happened and Reopen). Sits under the Details box. */
+  function endPanel(d) {
+    var me = S.me.office;
+    var held = d.mov.filter(function (m) { return m.to === me && m.hold === 'HELD'; })[0];
+    var done = !held && d.mov.filter(function (m) { return m.to === me && m.hold === 'DONE'; }).sort(function (a, b) { return b.holdAt - a.holdAt; })[0];
+    if (!held && !done) return '';
+    var body;
+    if (held) body = '<p class="end-t">Has it reached its end in ' + esc(me) + '?</p><div class="end-b">' +
+      btnFor(held, 'file', 'btn-n', 'archive', 'File') + btnFor(held, 'close', 'btn-ok', 'check', 'Close') + '</div>' +
+      '<p class="end-h"><b>File</b> · kept in the filing cabinet.<br><b>Close</b> · no further action needed.</p>';
+    else body = '<p class="end-t"><span class="pill ' + stateOf(done).cls + '"><i></i>' + esc(endWord(done)) + '</span> ' + esc(fmtDT(done.holdAt)) + (done.holdBy ? ' · ' + esc(done.holdBy) : '') + '</p>' +
+      (done.holdNote ? '<p class="end-h">“' + esc(done.holdNote) + '”</p>' : '') + '<div class="end-b">' + btnFor(done, 'reopen', 'btn-ghost', 'reopen', 'Reopen') + '</div>';
+    return '<div class="cpanel cend"><div class="cph">' + ic('archive') + 'End of the flow</div><div class="cpb">' + body + '</div></div>';
+  }
+  /** No office has it any more (it ended, or left BOE): it can be picked up again. */
+  function canContinue(d) {
+    if (!S.board || !(S.board.canLog || S.board.seeAll)) return false;
+    return !d.mov.some(function (m) { return m.status === 'PENDING' || m.hold === 'HELD'; });
   }
   function viewerActsOnly() { var a = $('#vIn .v-acts'); if (a && S.view && S.view.data) a.innerHTML = viewerActs(S.view.data); }
   function btnFor(m, a, cls, icon, label) {
@@ -2231,14 +2361,14 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
     var props = '<table class="props">' + row('File no.', '<b>' + r.no + '</b>') + row('Category', esc(catName(r.cat))) + row('Type', esc(r.type)) +
       row('Subject', '<b>' + esc(r.subject) + '</b>') + row('From (office)', esc(r.fromO !== undefined ? r.fromO : r.fromP)) + row('From (person)', esc(r.fromN)) + row('To', esc(r.toP)) + row('Ref. no.', esc(r.ref)) +
       row('Document date', esc(fmtD(r.docDate))) + row('Priority', r.prio !== 'Normal' ? '<b class="pr pr-' + esc(r.prio) + '">' + esc(r.prio) + '</b>' : 'Normal') +
-      row('Action required', esc(r.action)) + row('Due date', r.due ? '<span class="' + (due ? due.cls : '') + '">' + esc(fmtD(r.due)) + (due && due.cls === 'late' ? ' (overdue)' : '') + '</span>' : '') +
+      row('Action required', esc(lastActs(d))) + row('Due date', r.due ? '<span class="' + (due ? due.cls : '') + '">' + esc(fmtD(r.due)) + (due && due.cls === 'late' ? ' (overdue)' : '') + '</span>' : '') +
       row('Pages', esc(r.pages)) + row('Logged by', esc(r.createdBy) + ' · ' + esc(r.origin)) + row('Logged on', esc(fmtDT(r.createdAt))) +
       row('Last update', esc(fmtDT(r.updatedAt))) + row('Remarks', esc(r.remarks)) + '</table>';
     var hide = store.get('rms.dside') === '0';
     var side = '<div class="cside"><div class="cpanel cact"><div class="cph">' + ic('hand') + 'No. ' + r.no + ' · Action<span class="grow"></span>' +
       '<button class="tgl" type="button" data-v="side" title="' + (hide ? 'Show the details again' : 'Hide the details to give the scan more room') + '">' + (hide ? ic('down') + 'Show details' : '<span style="display:inline-flex;transform:rotate(180deg)">' + ic('down') + '</span>Hide details') + '</button>' +
       '<button class="x" type="button" data-v="close" title="Close">' + ic('x') + '</button></div><div class="cpb"><div class="v-now">' + nowAt(d) + '</div><div class="v-acts">' + viewerActs(d) + '</div></div></div>' +
-      '<div class="cpanel cdet"><div class="cph cdh" data-v="side" role="button" tabindex="0" title="' + (hide ? 'Show the details' : 'Hide the details to make room below') + '">' + ic('file') + 'Details<span class="grow"></span><span class="cdh-t">' + (hide ? 'Show' : 'Hide') + '</span><span class="cdh-c' + (hide ? '' : ' up') + '">' + ic('down') + '</span></div><div class="cpb">' + props + '</div></div></div>';
+      '<div class="cpanel cdet"><div class="cph cdh" data-v="side" role="button" tabindex="0" title="' + (hide ? 'Show the details' : 'Hide the details to make room below') + '">' + ic('file') + 'Details<span class="grow"></span><span class="cdh-t">' + (hide ? 'Show' : 'Hide') + '</span><span class="cdh-c' + (hide ? '' : ' up') + '">' + ic('down') + '</span></div><div class="cpb">' + props + '</div></div>' + endPanel(d) + '</div>';
     var tabs = '<div class="v-tabs">' + VTABS.filter(function (t) { return t[0] !== 'info'; }).map(function (t) { return '<button type="button" class="v-tab ' + (v.tab === t[0] ? 'on' : '') + '" data-v="tab" data-tab="' + t[0] + '">' + ic(t[1]) + t[2] + (t[0] === 'scan' && r.fileId ? ' <span class="pill p-green">1</span>' : '') + '</button>'; }).join('') + '<i class="v-ink"></i></div>';
     var oldBody = keepBody ? $('.v-body', box) : null, scroll = oldBody ? oldBody.scrollTop : 0;
     if (oldBody && v.tab === 'scan' && $('.cview', box)) {
@@ -2276,7 +2406,7 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
         { icon: 'building', tile: 'or', n: Object.keys(d.mov.reduce(function (a, m) { a[m.to] = 1; return a; }, {})).length, label: 'Offices it reached' },
         { icon: 'route', tile: 'grey', n: d.mov.filter(function (m) { return m.from; }).length, label: 'Times routed' }]) + '</div>' +
         '<dl class="dl">' + f('Subject', esc(r.subject), true) + f('Category', esc(catName(r.cat))) + f('Type', esc(r.type)) + f('From (office)', esc(r.fromO !== undefined ? r.fromO : r.fromP)) + f('From (person)', esc(r.fromN)) + f('To', esc(r.toP)) +
-        f('Ref. no.', esc(r.ref)) + f('Document date', esc(fmtD(r.docDate))) + f('Priority', esc(r.prio)) + f('Action required', esc(r.action)) + f('Due date', esc(fmtD(r.due))) +
+        f('Ref. no.', esc(r.ref)) + f('Document date', esc(fmtD(r.docDate))) + f('Priority', esc(r.prio)) + f('Action required', esc(lastActs(d))) + f('Due date', esc(fmtD(r.due))) +
         f('Pages', esc(r.pages)) + f('Logged by', esc(r.createdBy) + ' · ' + esc(r.origin)) + f('Logged on', esc(fmtDT(r.createdAt))) + f('Last update', esc(fmtDT(r.updatedAt))) +
         f('Remarks', esc(r.remarks), true) + '</dl>' +
         (root ? '' : '');
@@ -2367,7 +2497,7 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
     var node = function (m) {
       var st = stateOf(m), live = st.live, o = off(m.to);
       var lines = [];
-      if (!m.from) lines.push('Logged by ' + esc(m.sentBy) + ' · ' + esc(fmtDT(m.sentAt)));
+      if (!m.from) lines.push((m.purpose === 'Continued' ? 'Continued by ' : 'Logged by ') + esc(m.sentBy) + ' · ' + esc(fmtDT(m.sentAt)));
       else {
         lines.push('From <b>' + esc(m.from) + '</b> · ' + esc(m.purpose) + ' · ' + esc(fmtDT(m.sentAt)));
         if (m.status === 'ACCEPTED') lines.push('Accepted by ' + esc(m.respBy) + ' · ' + esc(fmtDT(m.respAt)));
@@ -2376,25 +2506,48 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
         if (m.status === 'RECALLED') lines.push('Recalled by ' + esc(m.from) + ' · ' + esc(fmtDT(m.respAt)));
       }
       if (m.hold === 'FORWARDED') lines.push('Forwarded · ' + esc(fmtDT(m.holdAt)));
-      if (m.hold === 'DONE') lines.push('Done · ' + esc(fmtDT(m.holdAt)));
-      var quote = m.status === 'RETURNED' ? m.respNote : (m.hold === 'DONE' ? m.holdNote : m.note);
+      if (m.hold === 'DONE') lines.push('<b>' + esc(endWord(m)) + '</b> · ' + esc(fmtDT(m.holdAt)));
+      var quote = m.status === 'RETURNED' ? m.respNote : (m.hold === 'DONE' ? (m.holdNote || (m.purpose === 'Continued' ? m.note : '')) : m.note);
       var since = live ? '<span>' + (m.status === 'PENDING' ? 'waiting ' : 'held ') + esc(span(m.status === 'PENDING' ? m.sentAt : (m.holdAt || m.respAt))) + '</span>' : '';
       var ch = kids[m.id] ? '<ul>' + kids[m.id].map(node).join('') + '</ul>' : '';
       return '<li><div class="rt-card ' + (live ? 'live' : '') + (st.k === 'ret' ? ' ret' : '') + '">' + codeChip(m.to) + '<div class="rt-b"><b>' + esc(o.name) + '</b>' + lines.map(function (l) { return '<small>' + l + '</small>'; }).join('') + (quote ? '<q>' + esc(quote) + '</q>' : '') + '</div><div class="rt-st">' + pill(st) + since + '</div></div>' + ch + '</li>';
     };
     return '<ul class="rt-tree">' + (kids[''] || []).map(node).join('') + '</ul>';
   }
+  /** Minutes between two moments that fall inside office hours (7–11 AM, 12–6 PM, Monday to Friday, Manila time).
+      Released 5:30 PM, received 7:00 AM the next working day = 30 minutes. */
+  var WORK = [[7, 11], [12, 18]];
+  function workMin(a, b) {
+    if (!a || !b || b <= a) return 0;
+    var H = 3600000, D = 86400000, PH = 8 * H, A = a + PH, B = b + PH, tot = 0;
+    for (var day = Math.floor(A / D) * D, k = 0; day < B && k < 800; day += D, k++) {
+      var wd = new Date(day).getUTCDay();
+      if (wd === 0 || wd === 6) continue;
+      WORK.forEach(function (w) { var s = Math.max(A, day + w[0] * H), e = Math.min(B, day + w[1] * H); if (e > s) tot += e - s; });
+    }
+    return Math.round(tot / 60000);
+  }
+  function gapShort(m) {
+    if (m < 60) return m + 'm';
+    var h = Math.floor(m / 60), r = m % 60;
+    return h >= 10 || !r ? Math.round(m / 60) + 'h' : h + 'h' + r + 'm';
+  }
+  function gapLong(m) {
+    var h = Math.floor(m / 60), r = m % 60;
+    return (h ? h + (h === 1 ? ' hour' : ' hours') : '') + (h && r ? ' ' : '') + (r || !h ? r + (r === 1 ? ' minute' : ' minutes') : '');
+  }
   function historyHTML(d) {
     var ev = [];
     d.mov.forEach(function (m) {
-      if (!m.from) ev.push({ at: m.sentAt, icon: 'plus', tile: 'or', t: 'Logged in ' + m.to, s: m.sentBy });
+      if (!m.from && m.purpose === 'Continued') ev.push({ at: m.sentAt, icon: 'reopen', tile: 'or', t: 'Continued in ' + m.to, s: m.sentBy, q: m.note });
+      else if (!m.from) ev.push({ at: m.sentAt, icon: 'plus', tile: 'or', t: 'Logged in ' + m.to, s: m.sentBy });
       else {
         ev.push({ at: m.sentAt, icon: 'send', tile: 'navy', t: (m.status === 'DELIVERED' ? 'Delivered ' : 'Sent ') + m.from + ' → ' + m.to, s: m.sentBy + ' · ' + m.purpose, q: m.note });
         if (m.status === 'ACCEPTED') ev.push({ at: m.respAt, icon: 'check', tile: 'green', t: 'Accepted by ' + m.to, s: m.respBy });
         if (m.status === 'RETURNED') ev.push({ at: m.respAt, icon: 'ret', tile: 'red', t: 'Returned by ' + m.to + ' to ' + m.from, s: m.respBy, q: m.respNote });
         if (m.status === 'RECALLED') ev.push({ at: m.respAt, icon: 'undo', tile: 'grey', t: 'Recalled by ' + m.from + ' from ' + m.to, s: m.respBy });
       }
-      if (m.hold === 'DONE') ev.push({ at: m.holdAt, icon: 'archive', tile: 'green', t: 'Done in ' + m.to, q: m.holdNote });
+      if (m.hold === 'DONE') ev.push({ at: m.holdAt, icon: m.endAs === 'Closed' ? 'check' : 'archive', tile: m.endAs === 'Closed' ? 'grey' : 'green', t: endWord(m) + ' in ' + m.to, q: m.holdNote });
     });
     (d.logs || []).forEach(function (l) {
       if (['Edited', 'Scan attached', 'Scan replaced', 'Scan removed', 'Scan found', 'Reopened'].indexOf(l.action) >= 0)
@@ -2402,7 +2555,9 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
     });
     ev.sort(function (a, b) { return (a.at || 0) - (b.at || 0); });
     return '<ol class="tl">' + ev.map(function (e, i) {
-      return '<li style="--i:' + i + '"><span class="dot tile ' + e.tile + '">' + ic(e.icon) + '</span><b>' + esc(e.t) + '</b><small>' + esc(fmtDT(e.at)) + (e.s ? ' · ' + esc(e.s) : '') + '</small>' + (e.q ? '<p>“' + esc(e.q) + '”</p>' : '') + (e.p ? '<p>' + esc(e.p) + '</p>' : '') + '</li>';
+      var g = i && ev[i - 1].at && e.at ? workMin(ev[i - 1].at, e.at) : null;
+      return (g === null ? '' : '<li class="tl-gap" style="--i:' + i + '"><span class="wt" title="Working time between these two steps: ' + esc(gapLong(g)) + '. Counts only office hours, 7–11 AM and 12–6 PM, Monday to Friday.">' + esc(gapShort(g)) + '</span></li>') +
+        '<li style="--i:' + i + '"><span class="dot tile ' + e.tile + '">' + ic(e.icon) + '</span><b>' + esc(e.t) + '</b><small>' + esc(fmtDT(e.at)) + (e.s ? ' · ' + esc(e.s) : '') + '</small>' + (e.q ? '<p>“' + esc(e.q) + '”</p>' : '') + (e.p ? '<p>' + esc(e.p) + '</p>' : '') + '</li>';
     }).join('') + '</ol>';
   }
   function wireViewer() {
@@ -2415,6 +2570,7 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
       if (k === 'side') { store.set('rms.dside', store.get('rms.dside') === '0' ? '1' : '0'); renderViewerClassic(true); fitSlip(); moveInk(); }
       if (k === 'tab') setTab(t.getAttribute('data-tab'));
       if (k === 'edit' && S.view && S.view.data) editDlg(S.view.data);
+      if (k === 'cont' && S.view && S.view.data) continueDlg(S.view.data.rec.no);
       if (k === 'print') printSlip();
       if (k === 'pdf') pdfSlip(t);
     });
@@ -2450,7 +2606,7 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
     if (m.status === 'RETURNED') t = 'Returned ' + fmtDT(m.respAt) + '<br>“' + esc(m.respNote) + '”';
     if (m.status === 'RECALLED') t = 'Recalled ' + fmtDT(m.respAt);
     if (m.hold === 'FORWARDED') t += '<br>Forwarded ' + fmtDT(m.holdAt);
-    if (m.hold === 'DONE') t += '<br>Done ' + fmtDT(m.holdAt) + (m.holdNote ? ': “' + esc(m.holdNote) + '”' : '');
+    if (m.hold === 'DONE') t += '<br><b>' + esc(endWord(m)) + '</b> ' + fmtDT(m.holdAt) + (m.holdNote ? ': “' + esc(m.holdNote) + '”' : '');
     return t;
   }
   function slipHTML(d, qr) {
@@ -2459,8 +2615,9 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
     var th = 'border:1px solid #333;padding:5px 6px;background:#0D47A1;color:#fff;font-size:8pt;text-align:left;';
     var lab = 'border:1px solid #333;padding:5px 7px;background:#eef2f8;font-weight:bold;font-size:8pt;width:24%;';
     var val = 'border:1px solid #333;padding:5px 7px;font-size:9pt;';
-    var moves = d.mov.filter(function (m) { return m.from; }).sort(function (a, b) { return a.sentAt - b.sentAt; });
+    var moves = d.mov.filter(function (m) { return m.from || m.purpose === 'Continued' || m.hold === 'DONE'; }).sort(function (a, b) { return a.sentAt - b.sentAt; });
     var rows = moves.map(function (m, i) {
+      if (!m.from) return '<tr><td style="' + td + 'text-align:center">' + (i + 1) + '</td><td style="' + td + '">' + (m.purpose === 'Continued' ? '<b>Outside BOE</b> → ' : 'Logged in ') + '<b>' + esc(m.to) + '</b><br><span style="color:#555">' + esc(off(m.to).name) + '</span></td><td style="' + td + '">' + (m.purpose === 'Continued' ? '<b>Continued</b><br><i>' + esc(m.note) + '</i>' : '') + '</td><td style="' + td + '">' + esc(fmtDT(m.sentAt)) + '<br>' + esc(m.sentBy) + '</td><td style="' + td + '">' + (m.purpose === 'Continued' ? 'Received back ' : 'Logged ') + fmtDT(m.sentAt) + (m.hold === 'FORWARDED' ? '<br>Forwarded ' + fmtDT(m.holdAt) : '') + (m.hold === 'DONE' ? '<br><b>' + esc(endWord(m)) + '</b> ' + fmtDT(m.holdAt) + (m.holdNote ? ': “' + esc(m.holdNote) + '”' : '') : '') + '</td></tr>';
       return '<tr><td style="' + td + 'text-align:center">' + (i + 1) + '</td><td style="' + td + '"><b>' + esc(m.from) + '</b> → <b>' + esc(m.to) + '</b><br><span style="color:#555">' + esc(off(m.to).name) + '</span></td><td style="' + td + '">' + esc(m.purpose) + (m.note ? '<br><i>“' + esc(m.note) + '”</i>' : '') + '</td><td style="' + td + '">' + esc(fmtDT(m.sentAt)) + '<br>' + esc(m.sentBy) + '</td><td style="' + td + '">' + actionText(m) + '</td></tr>';
     });
     for (var k = rows.length; k < 12; k++) rows.push('<tr><td style="' + td + 'height:30px;text-align:center;color:#999">' + (k + 1) + '</td><td style="' + td + '"></td><td style="' + td + '"></td><td style="' + td + '"></td><td style="' + td + '"></td></tr>');
@@ -2476,7 +2633,7 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
       '<tr><td style="' + lab + '">Subject</td><td style="' + val + '" colspan="3"><b>' + esc(r.subject) + '</b></td></tr>' +
       '<tr><td style="' + lab + '">From</td><td style="' + val + '">' + esc(r.fromP) + '</td><td style="' + lab + '">To</td><td style="' + val + '">' + esc(r.toP) + '</td></tr>' +
       '<tr><td style="' + lab + '">Ref. no.</td><td style="' + val + '">' + esc(r.ref) + '</td><td style="' + lab + '">Document date</td><td style="' + val + '">' + esc(fmtD(r.docDate)) + '</td></tr>' +
-      '<tr><td style="' + lab + '">Action required</td><td style="' + val + '">' + esc(r.action) + '</td><td style="' + lab + '">Due date</td><td style="' + val + '">' + esc(fmtD(r.due)) + '</td></tr>' +
+      '<tr><td style="' + lab + '">Action required</td><td style="' + val + '">' + esc(lastActs(d)) + '</td><td style="' + lab + '">Due date</td><td style="' + val + '">' + esc(fmtD(r.due)) + '</td></tr>' +
       '<tr><td style="' + lab + '">Logged by</td><td style="' + val + '">' + esc(r.origin) + ' · ' + esc(r.createdBy) + '</td><td style="' + lab + '">Logged on</td><td style="' + val + '">' + esc(fmtDT(r.createdAt)) + '</td></tr>' +
       (r.remarks ? '<tr><td style="' + lab + '">Remarks</td><td style="' + val + '" colspan="3">' + esc(r.remarks) + '</td></tr>' : '') +
       '</table>' +
@@ -2852,6 +3009,7 @@ html.classic .cdh .cdh-t,html.classic .cdh .cdh-c{display:none}
     $('#lgPeople').addEventListener('click', function (e) { var b = e.target.closest('[data-user]'); if (b) pickOffice(S.loginOffice, b.getAttribute('data-user')); });
     $('#side').addEventListener('click', function (e) { var b = e.target.closest('[data-page]'); if (b) setPage(b.getAttribute('data-page')); });
     $('#btnNew').addEventListener('click', newRecordDlg);
+    $('#btnCont').addEventListener('click', function () { continueDlg(); });
     wireInstall();
     $('#btnRefresh').addEventListener('click', function () { refresh(true).then(function () { toast('Up to date.', 'info'); }); });
     $('#btnOut').addEventListener('click', signOut);

@@ -26,9 +26,12 @@
  *        and wait for ACCEPT or RETURN.
  *      • Outgoing letters are already the office's own act, so they are
  *        delivered straight to the receiver's "On hand".
- *   3. From "On hand" an office FORWARDS it again (up or down the hierarchy)
- *      or marks it DONE. Every step is time-stamped with office and person.
- *   4. Higher offices see what is waiting in the offices under them.
+ *   3. From "On hand" an office FORWARDS it again (up or down the hierarchy,
+ *      with the action required), or ends the flow: FILE (kept in the cabinet)
+ *      or CLOSE (no further action). Every step is time-stamped.
+ *   4. A document that left BOE and came back (e.g. signed outside) is picked
+ *      up again with CONTINUE RECORD, under the same file number.
+ *   5. Higher offices see what is waiting in the offices under them.
  *
  *  HEAVY TRAFFIC
  *   Every save takes a turn (script lock). If it can't get a turn in 20 s the
@@ -55,7 +58,7 @@ const COLS = {
               'ActionRequired', 'DueDate', 'Pages', 'Remarks', 'FileId', 'FileName', 'FileMime', 'OriginOffice',
               'CreatedAt', 'CreatedBy', 'CreatedByName', 'UpdatedAt', 'OpId'],
   Movements: ['Id', 'TrackNo', 'ParentId', 'FromOffice', 'ToOffice', 'Purpose', 'Note', 'SentAt', 'SentBy', 'SentByName',
-              'Status', 'RespondedAt', 'RespondedBy', 'RespondedByName', 'ResponseNote', 'Hold', 'HoldAt', 'HoldBy', 'HoldNote'],
+              'Status', 'RespondedAt', 'RespondedBy', 'RespondedByName', 'ResponseNote', 'Hold', 'HoldAt', 'HoldBy', 'HoldNote', 'EndAs'],
   Logs:      ['Timestamp', 'TrackNo', 'Office', 'Username', 'Name', 'Action', 'Details', 'OpId'],
   Settings:  ['Key', 'Value', 'Notes']
 };
@@ -65,7 +68,7 @@ const TEXT_COLS = {
   Offices: ['Code', 'Parent'],
   Users: ['Username', 'Password', 'Office'],
   Records: ['DocType', 'Subject', 'FromOffice', 'FromPerson', 'FromParty', 'ToParty', 'RefNo', 'DocDate', 'DueDate', 'ActionRequired', 'Remarks', 'OriginOffice'],
-  Movements: ['Id', 'ParentId', 'Purpose', 'Note', 'ResponseNote', 'HoldNote'],
+  Movements: ['Id', 'ParentId', 'Purpose', 'Note', 'ResponseNote', 'HoldNote', 'EndAs'],
   Settings: ['Value']
 };
 const TIME_COLS = {
@@ -115,7 +118,7 @@ const DEFAULT_SETTINGS = [
 ];
 
 // Bump this when COLS changes: the server then adds the new columns to the sheets by itself.
-const SCHEMA = '2026-11-09b';
+const SCHEMA = '2026-11-12a';
 
 const FIELD_LABELS = {
   Category: 'Category', DocType: 'Type', Subject: 'Subject', FromOffice: 'From (office)', FromPerson: 'From (person)', ToParty: 'To', RefNo: 'Ref. no.',
@@ -490,7 +493,8 @@ function mvOut_(m) {
     id: s_(m.Id), no: n_(m.TrackNo), parent: s_(m.ParentId), from: s_(m.FromOffice), to: s_(m.ToOffice),
     purpose: s_(m.Purpose), note: s_(m.Note), sentAt: ms_(m.SentAt), sentBy: s_(m.SentByName) || s_(m.SentBy),
     status: s_(m.Status), respAt: ms_(m.RespondedAt), respBy: s_(m.RespondedByName) || s_(m.RespondedBy),
-    respNote: s_(m.ResponseNote), hold: s_(m.Hold), holdAt: ms_(m.HoldAt), holdBy: s_(m.HoldBy), holdNote: s_(m.HoldNote)
+    respNote: s_(m.ResponseNote), hold: s_(m.Hold), holdAt: ms_(m.HoldAt), holdBy: s_(m.HoldBy), holdNote: s_(m.HoldNote),
+    endAs: s_(m.EndAs)
   };
 }
 function live_(m) { return s_(m.Status) === 'PENDING' || s_(m.Hold) === 'HELD'; }
@@ -784,11 +788,7 @@ function fields_(raw, isNew) {
   if (raw.FromOffice === undefined && raw.FromParty !== undefined) raw = Object.assign({}, raw, { FromOffice: raw.FromParty });
   txt('DocType', 60); txt('Subject', 600); txt('FromOffice', 200); txt('FromPerson', 200); txt('ToParty', 300); txt('RefNo', 120);
   txt('Remarks', 1500);
-  if (raw.ActionRequired !== undefined) {                 // several can be ticked: "For information; For file"
-    const parts = [];
-    [].concat(raw.ActionRequired).join(';').split(';').map(x => s_(x)).forEach(x => { if (x && parts.indexOf(x) < 0) parts.push(x); });
-    f.ActionRequired = parts.join('; ').slice(0, 400);
-  }
+  if (raw.ActionRequired !== undefined) f.ActionRequired = actions_(raw.ActionRequired);   // older records; now asked when forwarding
   if (raw.Priority !== undefined) f.Priority = PRIORITIES.indexOf(s_(raw.Priority)) >= 0 ? s_(raw.Priority) : 'Normal';
   if (raw.Pages !== undefined) f.Pages = s_(raw.Pages) === '' ? '' : Math.max(0, Math.floor(n_(raw.Pages)));
   if (raw.DocDate !== undefined) f.DocDate = dateIn_(raw.DocDate);
@@ -796,6 +796,13 @@ function fields_(raw, isNew) {
   if (isNew && !f.Subject) fail_('Type the subject.');
   if (!isNew && raw.Subject !== undefined && !f.Subject) fail_('The subject cannot be blank.');
   return f;
+}
+
+/** Several "action required" ticks become one text: "For signature; For comment / recommendation". */
+function actions_(v) {
+  const parts = [];
+  [].concat(v === undefined || v === null ? [] : v).join(';').split(';').map(x => s_(x)).forEach(x => { if (x && parts.indexOf(x) < 0) parts.push(x); });
+  return parts.join('; ').slice(0, 400);
 }
 
 /** Puts one copy of the document in each office's Inbox (or straight On hand, for outgoing). */
@@ -813,7 +820,7 @@ function send_(c, row, opt) {
   const dup = to.filter(x => busy[x]);
   if (dup.length) fail_(dup.join(', ') + (dup.length > 1 ? ' already have' : ' already has') + ' No. ' + no + ' (in the Inbox or On hand).');
   const direct = s_(rec.Category) === 'OUTGOING';
-  const purpose = s_(opt.purpose).slice(0, 120) || 'For appropriate action';
+  const purpose = actions_(opt.purpose) || 'For appropriate action';
   const text = s_(opt.note).slice(0, 1000);
   const rows = to.map(x => ({
     Id: uid_('M'), TrackNo: no, ParentId: s_(row.Id), FromOffice: c.office, ToOffice: x, Purpose: purpose, Note: text,
@@ -997,21 +1004,53 @@ const ACT = {
   DONE(c, op) {
     const m = mv_(c, op.id);
     if (s_(m.ToOffice) !== c.office || s_(m.Hold) !== 'HELD') fail_('No. ' + n_(m.TrackNo) + ' is no longer on hand in your office.');
-    m.Hold = 'DONE'; m.HoldAt = c.now; m.HoldBy = c.user.username; m.HoldNote = s_(op.note).slice(0, 1000);
+    const how = s_(op.how).toUpperCase();
+    const end = how === 'FILED' || how === 'FILE' ? 'Filed' : (how === 'CLOSED' || how === 'CLOSE' ? 'Closed' : '');
+    m.Hold = 'DONE'; m.HoldAt = c.now; m.HoldBy = c.user.username; m.HoldNote = s_(op.note).slice(0, 1000); m.EndAs = end;
     save_(c.mov, m);
     touch_(c, m.TrackNo);
-    note_(c, n_(m.TrackNo), 'Done', s_(op.note) ? '"' + s_(op.note) + '"' : '');
-    return { no: n_(m.TrackNo) };
+    note_(c, n_(m.TrackNo), end || 'Done', s_(op.note) ? '"' + s_(op.note) + '"' : '');
+    return { no: n_(m.TrackNo), endAs: end };
   },
 
   REOPEN(c, op) {
     const m = mv_(c, op.id);
     if (s_(m.ToOffice) !== c.office || s_(m.Hold) !== 'DONE') fail_('No. ' + n_(m.TrackNo) + ' is not marked done in your office.');
-    m.Hold = 'HELD'; m.HoldAt = c.now; m.HoldBy = c.user.username; m.HoldNote = 'Reopened';
+    m.Hold = 'HELD'; m.HoldAt = c.now; m.HoldBy = c.user.username; m.HoldNote = 'Reopened'; m.EndAs = '';
     save_(c.mov, m);
     touch_(c, m.TrackNo);
     note_(c, n_(m.TrackNo), 'Reopened', '');
     return { no: n_(m.TrackNo) };
+  },
+
+  /** A document that left BOE (e.g. for a signature outside) came back: it continues under the same number,
+      on hand in this office. Where it went outside is not tracked; only where it came back from. */
+  CONTINUE(c, op) {
+    const r = rec_(c, op.no);
+    const no = n_(r.TrackNo);
+    const movs = c.mov.rows.filter(m => n_(m.TrackNo) === no);
+    if (!canLog_(c.user, c.set) && !seeAll_(c.user, c.set) && !c.isAdmin && !involved_(c, no)) {
+      fail_('No. ' + no + ' has not passed through ' + c.office + '. Ask ' + (list_(c.set.LOG_OFFICES).join(' or ') || 'the receiving office') + ' to continue it.');
+    }
+    const mine = movs.find(m => s_(m.ToOffice) === c.office && live_(m));
+    if (mine) fail_('No. ' + no + ' is already ' + (s_(mine.Status) === 'PENDING' ? 'in your Inbox' : 'on hand in ' + c.office) + '. Open it from there.');
+    const party = s_(op.from).slice(0, 200);
+    const text = s_(op.note).slice(0, 1000);
+    const last = movs.slice().sort((a, b) => (ms_(b.SentAt) || 0) - (ms_(a.SentAt) || 0))[0];
+    const root = {
+      Id: uid_('M'), TrackNo: no, ParentId: last ? s_(last.Id) : '', FromOffice: '', ToOffice: c.office, Purpose: 'Continued',
+      Note: (party ? 'Came back from ' + party : 'Came back from outside BOE') + (text ? ' · ' + text : ''),
+      SentAt: c.now, SentBy: c.user.username, SentByName: c.user.name, Status: 'ACCEPTED',
+      RespondedAt: c.now, RespondedBy: c.user.username, RespondedByName: c.user.name, ResponseNote: '',
+      Hold: 'HELD', HoldAt: c.now, HoldBy: c.user.username, HoldNote: '', EndAs: ''
+    };
+    add_(c.mov, [root]);
+    touch_(c, no);
+    note_(c, no, 'Continued', root.Note);
+    const elsewhere = movs.filter(live_).map(m => s_(m.ToOffice));
+    let sent = null;
+    if (op.send && op.send.to && op.send.to.length) sent = send_(c, root, op.send);
+    return { no: no, sent: sent, elsewhere: elsewhere };
   },
 
   EDIT(c, op) {
