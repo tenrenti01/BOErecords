@@ -881,6 +881,11 @@ html.classic .end-t{margin:0 0 6px;font-size:12px;color:#000;display:flex;align-
 html.classic .end-b{display:flex;gap:6px;flex-wrap:wrap}
 html.classic .end-b .btn{min-width:84px;justify-content:center}
 html.classic .end-h{margin:6px 0 0;font-size:11px;color:#555;line-height:1.45}
+@media (min-width:901px){
+  html.classic .cview:not(.noside) .cside{overflow:hidden}
+  html.classic .cview:not(.noside) .cdet{flex:0 1 auto;min-height:90px;display:flex;flex-direction:column}
+  html.classic .cview:not(.noside) .cdet .cpb{overflow:auto;min-height:0}
+}
 html.classic .cview.noside .cend .cpb{display:flex;align-items:center;gap:4px 10px;flex-wrap:wrap}
 html.classic .cview.noside .cend .end-h{display:none}
 html.classic .cview.noside .cend .end-t{margin:0}
