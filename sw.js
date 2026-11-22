@@ -1,6 +1,6 @@
 // BOE Records: keeps a copy of the screen files so the app opens fast and can be installed.
 // It never stores documents or sign-ins: every request to Google goes straight to the internet.
-const CACHE = 'boe-rms-v1';
+const CACHE = 'boe-rms-v2';
 const FILES = ['./', 'index.html', 'config.js', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png',
   'icon-maskable-512.png', 'apple-touch-icon.png', 'favicon.png'];
 
